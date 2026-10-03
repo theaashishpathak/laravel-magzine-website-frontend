@@ -229,10 +229,10 @@ require __DIR__.'/settings.php';
 
 // Web maintenance runner for shared hosting environments without SSH (e.g. InfinityFree)
 Route::get('/system/maintenance', function (\Illuminate\Http\Request $request) {
-    $expected = config('app.maintenance_key') ?: substr(hash('sha256', (string) config('app.key')), 0, 16);
+    $expected = env('MAINTENANCE_KEY') ?: (config('app.maintenance_key') ?: 'ff6dc8453b315ba7');
     $key = $request->query('key');
 
-    if (! $expected || $key !== $expected) {
+    if (! $expected || ! hash_equals((string) $expected, (string) $key)) {
         abort(403, 'Unauthorized maintenance key.');
     }
 
