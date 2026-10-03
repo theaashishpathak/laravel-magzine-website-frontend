@@ -236,6 +236,15 @@ Route::get('/system/maintenance', function (\Illuminate\Http\Request $request) {
         abort(403, 'Unauthorized maintenance key.');
     }
 
+    // Always remove Vite dev server hot file if present so production assets are served
+    $deletedHotFiles = [];
+    foreach ([public_path('hot'), base_path('public/hot'), base_path('hot')] as $hotPath) {
+        if (file_exists($hotPath)) {
+            @unlink($hotPath);
+            $deletedHotFiles[] = $hotPath;
+        }
+    }
+
     $action = $request->query('action', 'clear');
 
     if ($action === 'storage-link') {
@@ -244,7 +253,12 @@ Route::get('/system/maintenance', function (\Illuminate\Http\Request $request) {
     }
 
     \Illuminate\Support\Facades\Artisan::call('optimize:clear');
-    return response('<div style="font-family:sans-serif;padding:2rem;"><h2>Optimization Cache Cleared:</h2><pre>' . htmlspecialchars(\Illuminate\Support\Facades\Artisan::output()) . '</pre></div>');
+    $output = \Illuminate\Support\Facades\Artisan::output();
+    if (! empty($deletedHotFiles)) {
+        $output .= "\nDeleted development Vite hot file(s):\n" . implode("\n", $deletedHotFiles);
+    }
+
+    return response('<div style="font-family:sans-serif;padding:2rem;"><h2>Optimization Cache Cleared:</h2><pre>' . htmlspecialchars($output) . '</pre></div>');
 })->name('system.maintenance');
 
 // -------------------------------------------------------------------------
