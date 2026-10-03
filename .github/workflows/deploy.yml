@@ -21,6 +21,11 @@ jobs:
           php-version: '8.3'
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
 
+      - name: 📁 Ensure Directories Exist & Permissions
+        run: |
+          mkdir -p bootstrap/cache storage/framework/sessions storage/framework/views storage/framework/cache storage/logs
+          chmod -R 777 bootstrap/cache storage
+
       - name: 📦 Install Composer Dependencies
         run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
 
