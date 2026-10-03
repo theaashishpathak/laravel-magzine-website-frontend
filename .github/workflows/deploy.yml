@@ -23,7 +23,7 @@ jobs:
 
       - name: 📁 Ensure Directories Exist & Permissions
         run: |
-          mkdir -p bootstrap/cache storage/framework/sessions storage/framework/views storage/framework/cache storage/logs
+          mkdir -p bootstrap/cache storage/framework/sessions storage/framework/views storage/framework/cache/data storage/logs
           chmod -R 777 bootstrap/cache storage
 
       - name: 📦 Install Composer Dependencies
@@ -55,8 +55,12 @@ jobs:
             **/tests/**
             **/.env*
             **/storage/logs/**
+            **/storage/framework/testing/**
             **/scratch/**
             **/hot
+            **/*.sql
+            **/*.zip
+            **/phpunit.xml
 
       - name: 🔄 Auto-Clear Laravel Cache
         if: env.SITE_DOMAIN != ''

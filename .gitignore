@@ -7,19 +7,27 @@
 .env.bak
 .env.production
 .phpunit.result.cache
+.phpunit.cache
+.pest
 Homestead.json
 Homestead.yaml
 auth.json
 npm-debug.log
 yarn-error.log
+.DS_Store
+Thumbs.db
 /.fleet
 /.idea
 /.vscode
 /storage/*.key
 /storage/framework/cache/*
+/storage/framework/cache/data/*
 /storage/framework/sessions/*
 /storage/framework/views/*
+/storage/framework/testing/*
 /storage/logs/*
+/bootstrap/cache/*
+!bootstrap/cache/.gitignore
 !storage/framework/cache/.gitignore
 !storage/framework/sessions/.gitignore
 !storage/framework/views/.gitignore
@@ -27,3 +35,5 @@ yarn-error.log
 C:\Users\Aashish pathak\.gemini*
 scratch/
 cookies.txt
+*.sql
+*.zip
