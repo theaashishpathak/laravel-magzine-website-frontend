@@ -52,9 +52,10 @@
             });
         }
     }"
-    x-init="$nextTick(() => { if (window.lucide) window.lucide.createIcons(); })"
-    class="{{ $isSticky ? 'sticky top-0 header-sticky-glass bg-white/85 dark:bg-[#080B18]/85 backdrop-blur-xl' : 'relative bg-white dark:bg-[#111217]' }} z-40 border-b border-slate-200/85 dark:border-white/10 transition-colors duration-200">
-    <div class="mx-auto flex max-w-[1360px] items-center justify-between px-3 sm:px-6 lg:px-8">
+    x-effect="document.body.style.overflow = (mobileOpen || searchOpen) ? 'hidden' : ''"
+    class="{{ $isSticky ? 'sticky top-0' : 'relative' }} z-40">
+    <div class="{{ $isSticky ? 'header-sticky-glass bg-white/90 dark:bg-[#080B18]/90 backdrop-blur-xl' : 'bg-white dark:bg-[#111217]' }} border-b border-slate-200/85 dark:border-white/10 transition-colors duration-200">
+        <div class="mx-auto flex max-w-[1360px] items-center justify-between px-3 sm:px-6 lg:px-8">
         
         {{-- Brand / Logo (Left) --}}
         <div class="flex items-center gap-2 sm:gap-6 min-w-0 shrink">
@@ -204,7 +205,7 @@
     <div x-show="mobileOpen" x-cloak class="fixed inset-0 z-50 md:hidden"
         x-on:keydown.escape.window="mobileOpen = false">
         <div x-show="mobileOpen" x-transition.opacity x-on:click="mobileOpen = false"
-            class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+            class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40"></div>
 
         <aside x-show="mobileOpen"
             x-transition:enter="transition ease-out duration-250"
@@ -213,7 +214,7 @@
             x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="translate-x-0"
             x-transition:leave-end="-translate-x-full"
-            class="absolute inset-y-0 left-0 flex h-full w-[85%] max-w-sm flex-col bg-white shadow-2xl dark:bg-[#111217]">
+            class="fixed inset-y-0 left-0 z-50 flex h-screen h-[100dvh] w-[85%] max-w-sm flex-col bg-white shadow-2xl dark:bg-[#111217] border-r border-slate-200 dark:border-white/10">
             
             <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3.5 dark:border-[#1d1f27]">
                 <span class="text-base font-black uppercase tracking-widest text-slate-900 dark:text-white" style="font-family: 'Syne', sans-serif;">
