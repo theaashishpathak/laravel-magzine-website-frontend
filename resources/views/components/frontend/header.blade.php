@@ -54,18 +54,18 @@
     }"
     x-init="$nextTick(() => { if (window.lucide) window.lucide.createIcons(); })"
     class="{{ $isSticky ? 'sticky top-0 header-sticky-glass bg-white/85 dark:bg-[#080B18]/85 backdrop-blur-xl' : 'relative bg-white dark:bg-[#111217]' }} z-40 border-b border-slate-200/85 dark:border-white/10 transition-colors duration-200">
-    <div class="mx-auto flex max-w-[1360px] items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
+    <div class="mx-auto flex max-w-[1360px] items-center justify-between px-3 sm:px-6 lg:px-8">
         
         {{-- Brand / Logo (Left) --}}
-        <div class="flex items-center gap-6 shrink-0">
-            <a href="{{ route('frontend.home') }}" class="flex items-center gap-2.5 group">
+        <div class="flex items-center gap-2 sm:gap-6 min-w-0 shrink">
+            <a href="{{ route('frontend.home') }}" class="flex items-center gap-2 sm:gap-2.5 group min-w-0">
                 @if ($logoType === 'image' && !empty($logoUrl))
-                    <img src="{{ $logoUrl }}" alt="{{ $siteName }}" style="height: {{ $logoHeight }}px" class="w-auto object-contain">
+                    <img src="{{ $logoUrl }}" alt="{{ $siteName }}" style="height: {{ $logoHeight }}px" class="w-auto max-h-8 object-contain">
                 @else
-                    <span class="grid h-8 w-8 place-items-center rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-xs group-hover:scale-105 transition duration-200">
+                    <span class="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-xs group-hover:scale-105 transition duration-200">
                         <i data-lucide="{{ $brandIcon }}" class="h-4 w-4"></i>
                     </span>
-                    <span class="text-lg font-black uppercase tracking-widest text-slate-900 dark:text-white" style="font-family: 'Syne', sans-serif;">
+                    <span class="text-base sm:text-lg font-black uppercase tracking-wider sm:tracking-widest text-slate-900 dark:text-white truncate" style="font-family: 'Syne', sans-serif;">
                         {{ $siteName }}
                     </span>
                 @endif
@@ -134,8 +134,8 @@
             @endforeach
         </nav>
 
-        {{-- Right Controls (Search, Theme Pill, Action CTA) --}}
-        <div class="flex items-center gap-2.5 sm:gap-3 shrink-0">
+        {{-- Right Controls (Search, Theme Switcher, Action CTA) --}}
+        <div class="flex items-center gap-1.5 sm:gap-2.5 md:gap-3 shrink-0">
             {{-- Search Button --}}
             @if ($showSearch)
                 <button type="button" x-on:click="searchOpen = true"
@@ -145,24 +145,27 @@
                 </button>
             @endif
 
-            {{-- Sleek Dual-Icon Theme Switcher Toggle Pill --}}
+            {{-- Theme Switcher --}}
             @if ($showThemeToggle)
+                {{-- Compact icon on mobile screens (< sm) to prevent header overflow --}}
                 <button type="button" x-on:click="toggleTheme()"
-                    class="relative inline-flex h-8 w-[62px] items-center justify-between rounded-full border border-slate-200 bg-slate-100 p-1 transition-colors duration-200 dark:border-[#2c2e3a] dark:bg-[#181920]"
+                    class="grid h-8 w-8 place-items-center rounded-full text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-neutral-400 dark:hover:bg-[#1e2028] dark:hover:text-white sm:hidden"
                     title="Toggle Theme" aria-label="Toggle Theme">
-                    
-                    {{-- Sliding Knob / Indicator (Left = Moon in dark mode; Right = Sun in light mode) --}}
+                    <i data-lucide="moon" class="h-4 w-4" x-show="!isDark"></i>
+                    <i data-lucide="sun" class="h-4 w-4 text-amber-500" x-show="isDark" x-cloak></i>
+                </button>
+
+                {{-- Full Sliding Dual-Icon Pill on sm+ --}}
+                <button type="button" x-on:click="toggleTheme()"
+                    class="relative hidden sm:inline-flex h-8 w-[62px] items-center justify-between rounded-full border border-slate-200 bg-slate-100 p-1 transition-colors duration-200 dark:border-[#2c2e3a] dark:bg-[#181920]"
+                    title="Toggle Theme" aria-label="Toggle Theme">
                     <span class="absolute top-1 left-1 h-6 w-6 rounded-full bg-white shadow-xs transition-transform duration-200 ease-in-out dark:bg-[#262832]"
                           :class="isDark ? 'translate-x-0' : 'translate-x-7'"
                           aria-hidden="true"></span>
-
-                    {{-- Moon Icon (Left - Active when isDark is true) --}}
                     <span class="relative z-10 flex h-6 w-6 items-center justify-center transition-colors duration-200"
                           :class="isDark ? 'text-indigo-400 dark:text-white font-bold' : 'text-slate-400 dark:text-neutral-500'">
                         <i data-lucide="moon" class="h-3.5 w-3.5"></i>
                     </span>
-
-                    {{-- Sun Icon (Right - Active when isDark is false) --}}
                     <span class="relative z-10 flex h-6 w-6 items-center justify-center transition-colors duration-200"
                           :class="isDark ? 'text-slate-400 dark:text-neutral-500' : 'text-amber-500 font-bold'">
                         <i data-lucide="sun" class="h-3.5 w-3.5"></i>
@@ -170,11 +173,11 @@
                 </button>
             @endif
 
-            {{-- Primary Action CTA --}}
+            {{-- Primary Action CTA: visible on sm+ (mobile drawer includes CTA) --}}
             @if ($showActionButton)
                 @auth
                     <a href="{{ $actionAuthUrl }}"
-                        class="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-4 py-1.5 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100">
+                        class="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100">
                         @if ($actionIcon)
                             <i data-lucide="{{ $actionIcon }}" class="h-3.5 w-3.5"></i>
                         @endif
@@ -182,7 +185,7 @@
                     </a>
                 @else
                     <a href="{{ $actionGuestUrl }}"
-                        class="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-4 py-1.5 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100">
+                        class="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100">
                         <span>{{ $actionGuestText }}</span>
                     </a>
                 @endauth

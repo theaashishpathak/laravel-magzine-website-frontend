@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @if (($locale = app(\App\Support\LocaleResolver::class)->current()) && $locale->isRtl()) dir="rtl" @endif
-    class="scroll-smooth {{ request()->cookie('crm_theme') === 'dark' ? 'dark' : '' }}">
+    class="scroll-smooth overflow-x-hidden w-full max-w-full {{ request()->cookie('crm_theme') === 'dark' ? 'dark' : '' }}">
 
 <head>
     <meta charset="utf-8">
@@ -85,7 +85,7 @@
     @endisset
 </head>
 
-<body class="bg-[var(--bg-primary)] font-sans text-slate-900 antialiased dark:bg-[#080B18] dark:text-neutral-100 transition-colors duration-200 selection:bg-[#3B50F9] selection:text-white">
+<body class="bg-[var(--bg-primary)] font-sans text-slate-900 antialiased dark:bg-[#080B18] dark:text-neutral-100 transition-colors duration-200 selection:bg-[#3B50F9] selection:text-white overflow-x-hidden w-full max-w-full min-w-0">
     <a href="#main"
         class="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-50 focus:rounded-lg focus:bg-[#3B50F9] focus:px-3 focus:py-1.5 focus:text-xs focus:font-semibold focus:text-white">
         Skip to content

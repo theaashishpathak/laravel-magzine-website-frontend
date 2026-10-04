@@ -204,7 +204,7 @@
         <div class="fixed inset-x-0 bottom-0 z-30 footer-ticker-glass bg-white/90 dark:bg-[#080B18]/90 backdrop-blur-xl px-4 py-2.5 shadow-2xl">
             <div class="mx-auto flex max-w-[1440px] items-center justify-between gap-4">
                 {{-- Continuous Moving Ticker Container --}}
-                <div class="relative flex-1 overflow-hidden ticker-mask py-1">
+                <div class="relative flex-1 min-w-0 overflow-hidden ticker-mask py-1">
                     <div class="ticker-track gap-8">
                         {{-- Set 1 --}}
                         @foreach ($stickyPosts as $sp)
