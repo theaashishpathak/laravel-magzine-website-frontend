@@ -215,6 +215,9 @@
                                         <button type="button"
                                                 wire:click="deletePost({{ $post->id }})"
                                                 wire:confirm="Are you sure you want to delete this post? This will move it to trash."
+                                                data-confirm-nature="danger"
+                                                data-confirm-title="Delete Post"
+                                                data-confirm-btn="Delete Post"
                                                 class="rounded-lg p-1.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
                                                 title="Delete Post">
                                             <i data-lucide="trash-2" class="h-4 w-4"></i>

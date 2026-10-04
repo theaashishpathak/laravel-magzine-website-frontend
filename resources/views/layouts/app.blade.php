@@ -102,6 +102,7 @@
         </div>
 
         <x-admin.quick-create-modal />
+        <x-admin.confirm-dialog />
 
         @livewireScripts
 

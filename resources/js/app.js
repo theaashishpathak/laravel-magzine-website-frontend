@@ -502,32 +502,136 @@ const initFlashToast = () => {
  });
 };
 
-const initDeleteConfirm = () => {
+const detectAlertNature = (text, element) => {
+	if (element && element.dataset && element.dataset.confirmNature) {
+		return element.dataset.confirmNature;
+	}
+	const lower = (text || '').toLowerCase();
+	if (lower.includes('delete') || lower.includes('trash') || lower.includes('remove') || lower.includes('destroy') || lower.includes('wipe') || lower.includes('purge') || lower.includes('permanently')) {
+		return 'danger';
+	}
+	if (lower.includes('archive') || lower.includes('reset') || lower.includes('clear') || lower.includes('warning') || lower.includes('revert') || lower.includes('unsubscribe') || lower.includes('merge')) {
+		return 'warning';
+	}
+	if (lower.includes('promote') || lower.includes('publish') || lower.includes('restore') || lower.includes('toggle') || lower.includes('info')) {
+		return 'info';
+	}
+	if (lower.includes('success') || lower.includes('approve') || lower.includes('accept')) {
+		return 'success';
+	}
+	return 'danger';
+};
+
+const getDefaultConfirmTitle = (nature, text) => {
+	const lower = (text || '').toLowerCase();
+	if (lower.includes('post')) return nature === 'danger' ? 'Delete Post' : 'Post Action';
+	if (lower.includes('page')) return nature === 'danger' ? 'Delete Page' : 'Page Action';
+	if (lower.includes('tag')) return nature === 'danger' ? 'Delete Tag' : 'Tag Action';
+	if (lower.includes('comment')) return nature === 'danger' ? 'Delete Comment' : 'Comment Action';
+	if (lower.includes('media') || lower.includes('file')) return nature === 'danger' ? 'Delete Media' : 'Media Action';
+	if (lower.includes('role')) return nature === 'danger' ? 'Delete Role' : 'Role Action';
+	if (lower.includes('cache')) return 'Clear System Cache';
+	if (lower.includes('reset')) return 'Reset Defaults';
+	switch (nature) {
+		case 'danger': return 'Delete Confirmation';
+		case 'warning': return 'Warning & Confirmation';
+		case 'info': return 'Confirm Action';
+		case 'success': return 'Confirm Action';
+		default: return 'Confirmation';
+	}
+};
+
+const getDefaultConfirmBtn = (nature) => {
+	switch (nature) {
+		case 'danger': return 'Yes, Delete';
+		case 'warning': return 'Yes, Proceed';
+		case 'info': return 'Confirm';
+		case 'success': return 'Accept';
+		default: return 'Confirm';
+	}
+};
+
+const initCustomConfirmSystem = () => {
+	// 1. Programmatic API: window.$confirm({ nature, title, message, confirmText, cancelText })
+	window.$confirm = (options = {}) => {
+		return new Promise((resolve) => {
+			const nature = options.nature || detectAlertNature(options.message || options.title || '');
+			window.dispatchEvent(new CustomEvent('system-confirm', {
+				detail: {
+					nature,
+					title: options.title || getDefaultConfirmTitle(nature, options.message),
+					message: options.message || 'Are you sure you want to proceed?',
+					confirmText: options.confirmText || getDefaultConfirmBtn(nature),
+					cancelText: options.cancelText || 'Cancel',
+					badge: options.badge,
+					onConfirm: () => resolve(true),
+					onCancel: () => resolve(false),
+				}
+			}));
+		});
+	};
+
+	// 2. Intercept Livewire's __livewire_confirm on elements with wire:confirm
+	const wrapWireConfirmElement = (el) => {
+		if (!el || el.__livewire_confirm_wrapped) return;
+
+		el.__livewire_confirm = (action, instead) => {
+			const currentMsg = el.getAttribute('wire:confirm') || 'Are you sure?';
+			const nature = el.dataset.confirmNature || detectAlertNature(currentMsg, el);
+			const title = el.dataset.confirmTitle || getDefaultConfirmTitle(nature, currentMsg);
+			const confirmBtn = el.dataset.confirmBtn || getDefaultConfirmBtn(nature);
+			const cancelBtn = el.dataset.cancelBtn || 'Cancel';
+
+			window.dispatchEvent(new CustomEvent('system-confirm', {
+				detail: {
+					nature,
+					title,
+					message: currentMsg,
+					confirmText: confirmBtn,
+					cancelText: cancelBtn,
+					badge: el.dataset.confirmBadge,
+					onConfirm: () => {
+						try { action(); } catch (e) { console.error(e); }
+					},
+					onCancel: () => {
+						try { instead(); } catch (e) { console.error(e); }
+					},
+				}
+			}));
+		};
+
+		el.__livewire_confirm_wrapped = true;
+	};
+
+	// Capture phase click on any element with wire:confirm so Livewire's confirm() never fires
+	document.addEventListener('click', (event) => {
+		const target = event.target.closest('[wire\\:confirm]');
+		if (target) {
+			wrapWireConfirmElement(target);
+		}
+	}, true);
+
+	// 3. Form submissions with [data-delete-confirm]
 	document.addEventListener('submit', (event) => {
 		const submitter = event.submitter;
-
 		if (!submitter || !submitter.matches('[data-delete-confirm]')) {
 			return;
 		}
 
 		event.preventDefault();
+		const form = event.target;
+		const message = submitter.dataset.confirmMessage || 'This action cannot be undone.';
+		const nature = submitter.dataset.confirmNature || 'danger';
+		const title = submitter.dataset.confirmTitle || 'Delete Record?';
 
-		if (!window.Swal) {
-			event.target.submit();
-			return;
-		}
-
-		window.Swal.fire({
-			title: 'Delete record?',
-			text: 'This action cannot be undone.',
-			icon: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#4f46e5',
-			cancelButtonColor: '#64748b',
-			confirmButtonText: 'Yes, delete it',
-		}).then((result) => {
-			if (result.isConfirmed) {
-				event.target.submit();
+		window.$confirm({
+			nature,
+			title,
+			message,
+			confirmText: submitter.dataset.confirmBtn || 'Yes, delete it',
+		}).then((confirmed) => {
+			if (confirmed) {
+				form.submit();
 			}
 		});
 	});
@@ -765,7 +869,7 @@ window.addEventListener('DOMContentLoaded', () => {
 	initSidebarMenus();
 	initThemeControls();
 	initButtons();
-	initDeleteConfirm();
+	initCustomConfirmSystem();
 	initPlugins();
 });
 
@@ -778,6 +882,7 @@ document.addEventListener('livewire:navigated', () => {
 	initSidebarMenus();
 	initThemeControls();
 	initButtons();
+	initCustomConfirmSystem();
 	initPlugins();
 });
 
