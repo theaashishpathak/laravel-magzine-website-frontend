@@ -130,3 +130,13 @@ test('search URL returns 200 with query', function (): void {
 test('feed.xml URL is accessible', function (): void {
     $this->get('/en/feed.xml')->assertOk()->assertHeader('Content-Type', 'application/rss+xml; charset=utf-8');
 });
+
+test('404 error page renders with website theme header and footer', function (): void {
+    $response = $this->get('/non-existent-page-xyz-123');
+
+    $response->assertNotFound();
+    $response->assertSee('404');
+    $response->assertSee('Oops! Page Not Found');
+    $response->assertSee('Back to Homepage');
+    $response->assertSee('Explore Articles');
+});

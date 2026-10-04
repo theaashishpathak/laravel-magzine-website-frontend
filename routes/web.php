@@ -296,12 +296,12 @@ $dispatchContent = function (\Illuminate\Http\Request $request, ?string $locale 
     return app(\App\Livewire\Frontend\PostShow::class)();
 };
 
-Route::get('/{slug}', $dispatchContent)->where('slug', '[a-z0-9\-]+')->name('frontend.post.show');
+Route::get('/{slug}', $dispatchContent)->where('slug', '[^/]+')->name('frontend.post.show');
 
 Route::group([
     'prefix' => '{locale}',
     'where' => ['locale' => '[a-z]{2}(-[A-Z]{2})?'],
 ], function () use ($dispatchContent): void {
-    Route::get('/{slug}', $dispatchContent)->where('slug', '[a-z0-9\-]+');
+    Route::get('/{slug}', $dispatchContent)->where('slug', '[^/]+');
 });
 

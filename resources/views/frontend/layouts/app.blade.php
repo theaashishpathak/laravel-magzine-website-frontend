@@ -95,6 +95,7 @@
 
     <main id="main" class="min-h-[60vh]">
         {{ $slot ?? '' }}
+        @yield('content')
     </main>
 
     <x-frontend.footer />

@@ -52,8 +52,18 @@ class PostShow extends Component
         $request = $request ?? request();
         $languageId = app(\App\Support\LocaleResolver::class)->current()?->id;
 
+        $decodedSlug = urldecode($slug);
         $cleanSlug = ltrim($slug, '-');
-        $slugVariants = array_unique(array_filter([$slug, $cleanSlug, '-' . $cleanSlug]));
+        $slugVariants = array_unique(array_filter([
+            $slug,
+            $decodedSlug,
+            $cleanSlug,
+            '-' . $cleanSlug,
+            \Illuminate\Support\Str::slug($slug),
+            \Illuminate\Support\Str::slug($decodedSlug),
+            str_replace(' ', '-', $decodedSlug),
+            str_replace('-', ' ', $decodedSlug),
+        ]));
 
         $translation = PostTranslation::query()
             ->with('post.translations', 'post.author', 'post.featuredImage', 'post.category', 'language')
