@@ -55,7 +55,7 @@
     x-effect="document.body.style.overflow = (mobileOpen || searchOpen) ? 'hidden' : ''"
     class="{{ $isSticky ? 'sticky top-0' : 'relative' }} z-40">
     <div class="{{ $isSticky ? 'header-sticky-glass bg-white/90 dark:bg-[#080B18]/90 backdrop-blur-xl' : 'bg-white dark:bg-[#111217]' }} border-b border-slate-200/85 dark:border-white/10 transition-colors duration-200">
-        <div class="mx-auto flex max-w-[1360px] items-center justify-between px-3 sm:px-6 lg:px-8">
+        <div class="mx-auto flex max-w-[1360px] items-center justify-between px-3 py-3 sm:px-6 lg:px-8">
         
         {{-- Brand / Logo (Left) --}}
         <div class="flex items-center gap-2 sm:gap-6 min-w-0 shrink">
