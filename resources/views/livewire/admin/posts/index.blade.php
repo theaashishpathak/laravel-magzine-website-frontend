@@ -202,11 +202,23 @@
                                         </a>
                                     @endcan
                                     @can('view', $post)
-                                        <a href="{{ route('admin.posts.show', $post) }}" wire:navigate
-                                           class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-slate-800"
-                                           title="View">
+                                        @php($postSlug = $post->translate('slug') ?: $post->translations->first()?->slug)
+                                        <a href="{{ $postSlug ? route('frontend.post.show', ['slug' => $postSlug]) : url('/' . $post->id) }}"
+                                           target="_blank"
+                                           rel="noopener noreferrer"
+                                           class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-slate-800"
+                                           title="View on frontend">
                                             <i data-lucide="eye" class="h-4 w-4"></i>
                                         </a>
+                                    @endcan
+                                    @can('delete', $post)
+                                        <button type="button"
+                                                wire:click="deletePost({{ $post->id }})"
+                                                wire:confirm="Are you sure you want to delete this post? This will move it to trash."
+                                                class="rounded-lg p-1.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
+                                                title="Delete Post">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                        </button>
                                     @endcan
                                 </div>
                             </td>

@@ -197,3 +197,39 @@ test('posts create page renders for authors', function (): void {
         ->assertOk()
         ->assertSee('Create');   // "Create" appears in breadcrumb + page heading
 });
+
+test('deletePost action deletes post and removes it from table', function (): void {
+    $admin = postsIndexUser('Admin');
+    $post = Post::factory()->create();
+
+    Livewire::actingAs($admin)
+        ->test(Index::class)
+        ->call('deletePost', $post->id);
+
+    expect(Post::query()->find($post->id))->toBeNull();
+    expect(Post::withTrashed()->find($post->id))->not->toBeNull();
+});
+
+test('deletePost action rejects unauthorized user', function (): void {
+    $author = postsIndexUser('Author');
+    $other = postsIndexUser('Author');
+    $otherPost = Post::factory()->withAuthor($other->id)->create();
+
+    Livewire::actingAs($author)
+        ->test(Index::class)
+        ->call('deletePost', $otherPost->id);
+
+    expect(Post::query()->find($otherPost->id))->not->toBeNull();
+});
+
+test('index table renders frontend view link with target _blank', function (): void {
+    $admin = postsIndexUser('Admin');
+    $post = Post::factory()->published()->create();
+    $slug = $post->translations()->first()->slug;
+
+    Livewire::actingAs($admin)
+        ->test(Index::class)
+        ->assertSee(route('frontend.post.show', ['slug' => $slug]))
+        ->assertSee('target="_blank"', false);
+});
+

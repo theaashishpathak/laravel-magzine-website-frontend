@@ -69,21 +69,31 @@ class PostShow extends Component
                 ->first();
         }
 
-        if ($translation === null
-            || $translation->post === null
-            || $translation->post->status !== \App\Enums\PostStatus::Published
-            || $translation->post->published_at === null
-            || $translation->post->published_at->gt(now())
-        ) {
+        if ($translation === null || $translation->post === null) {
             abort(404);
         }
 
-        \App\Http\Controllers\Frontend\FrontendDispatcher::bumpViewCount($request, $translation->post);
+        $user = $request->user();
+        $canPreview = $user !== null && (
+            $user->can('view', $translation->post)
+            || $user->hasRole(['Super Admin', 'Admin', 'Editor', 'Author'])
+        );
+
+        if (! $canPreview && (
+            $translation->post->status !== \App\Enums\PostStatus::Published
+            || $translation->post->published_at === null
+            || $translation->post->published_at->gt(now())
+        )) {
+            abort(404);
+        }
+
+        if ($translation->post->status === \App\Enums\PostStatus::Published) {
+            \App\Http\Controllers\Frontend\FrontendDispatcher::bumpViewCount($request, $translation->post);
+        }
 
         // Track per-user reading history when a visitor is logged in. We use
         // the Action layer so the same logic is reusable from API endpoints
         // or background jobs (e.g., "you finished reading" trackers).
-        $user = $request->user();
         if ($user !== null && $user->portal_type === 'visitor') {
             app(\App\Actions\Visitor\ReadingHistory\RecordReadAction::class)->handle(
                 user: $user,

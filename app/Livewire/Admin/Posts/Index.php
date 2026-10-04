@@ -144,6 +144,26 @@ class Index extends Component
         }
     }
 
+    public function deletePost(Post $post): void
+    {
+        if (! Gate::allows('delete', $post)) {
+            $this->dispatchDangerToast('You are not authorized to delete this post.');
+
+            return;
+        }
+
+        try {
+            $title = $post->translate('title') ?? 'Post';
+            $post->delete();
+            $this->dispatchSuccessToast("Post \"{$title}\" was moved to trash.");
+            $this->selectedIds = array_values(array_diff($this->selectedIds, [$post->id]));
+            $this->resetPage();
+        } catch (Throwable $exception) {
+            report($exception);
+            $this->dispatchDangerToast('Failed to delete the post.');
+        }
+    }
+
     public function requestBulkDelete(): void
     {
         if ($this->selectedIds === []) {
