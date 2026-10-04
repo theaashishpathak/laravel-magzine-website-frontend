@@ -32,7 +32,7 @@
     @php($t = $this->tiles)
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         @foreach ([
-            ['label' => 'Published this week', 'value' => $t['published_this_week'], 'icon' => 'newspaper', 'color' => 'from-indigo-500 to-violet-500'],
+            ['label' => 'Published this week', 'value' => $t['published_this_week'], 'icon' => 'newspaper', 'color' => 'from-indigo-500 to-violet-500', 'url' => 'admin.posts.index'],
             ['label' => 'Pending review', 'value' => $t['pending_review'], 'icon' => 'hourglass', 'color' => 'from-amber-500 to-orange-500', 'url' => 'admin.editorial.queue'],
             ['label' => 'Pending comments', 'value' => $t['pending_comments'], 'icon' => 'message-square', 'color' => 'from-rose-500 to-pink-500', 'url' => 'admin.comments.index'],
             ['label' => 'Unread notifications', 'value' => $t['unread_notifications'], 'icon' => 'bell', 'color' => 'from-sky-500 to-cyan-500', 'url' => 'notifications.index'],

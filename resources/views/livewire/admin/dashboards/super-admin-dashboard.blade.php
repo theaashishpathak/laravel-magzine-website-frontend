@@ -361,12 +361,12 @@
 
         <div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
             {{-- Metric 1: Posts --}}
-            <div class="rounded-2xl border border-slate-200/80 bg-white p-4.5 shadow-xs transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+            <a href="{{ route('admin.posts.index') }}" wire:navigate class="group block rounded-2xl border border-slate-200/80 bg-white p-4.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-blue-500/50 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-500/50">
                 <div class="flex items-center gap-2">
-                    <span class="grid h-6 w-6 place-items-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
+                    <span class="grid h-6 w-6 place-items-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-600 group-hover:text-white dark:bg-blue-500/20 dark:text-blue-400 dark:group-hover:bg-blue-500 dark:group-hover:text-white">
                         <i data-lucide="file-text" class="h-3.5 w-3.5"></i>
                     </span>
-                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">Posts</span>
+                    <span class="text-xs font-semibold text-slate-600 transition-colors group-hover:text-blue-600 dark:text-slate-400 dark:group-hover:text-blue-400">Posts</span>
                 </div>
                 <div class="mt-3">
                     <span class="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
@@ -381,15 +381,15 @@
                         <path d="M2 15 Q 15 16, 25 10 T 45 8 T 58 4" stroke-linecap="round"/>
                     </svg>
                 </div>
-            </div>
+            </a>
 
             {{-- Metric 2: Users --}}
-            <div class="rounded-2xl border border-slate-200/80 bg-white p-4.5 shadow-xs transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+            <a href="{{ route('admin.staff.index') }}" wire:navigate class="group block rounded-2xl border border-slate-200/80 bg-white p-4.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-orange-500/50 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-orange-500/50">
                 <div class="flex items-center gap-2">
-                    <span class="grid h-6 w-6 place-items-center rounded-lg bg-orange-50 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400">
+                    <span class="grid h-6 w-6 place-items-center rounded-lg bg-orange-50 text-orange-600 transition-colors group-hover:bg-orange-600 group-hover:text-white dark:bg-orange-500/20 dark:text-orange-400 dark:group-hover:bg-orange-500 dark:group-hover:text-white">
                         <i data-lucide="users" class="h-3.5 w-3.5"></i>
                     </span>
-                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">Users</span>
+                    <span class="text-xs font-semibold text-slate-600 transition-colors group-hover:text-orange-600 dark:text-slate-400 dark:group-hover:text-orange-400">Users</span>
                 </div>
                 <div class="mt-3">
                     <span class="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
@@ -404,15 +404,15 @@
                         <path d="M2 17 Q 18 16, 30 11 T 48 9 T 58 5" stroke-linecap="round"/>
                     </svg>
                 </div>
-            </div>
+            </a>
 
             {{-- Metric 3: Categories --}}
-            <div class="rounded-2xl border border-slate-200/80 bg-white p-4.5 shadow-xs transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+            <a href="{{ route('admin.categories.index') }}" wire:navigate class="group block rounded-2xl border border-slate-200/80 bg-white p-4.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-amber-500/50 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-amber-500/50">
                 <div class="flex items-center gap-2">
-                    <span class="grid h-6 w-6 place-items-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
+                    <span class="grid h-6 w-6 place-items-center rounded-lg bg-amber-50 text-amber-600 transition-colors group-hover:bg-amber-600 group-hover:text-white dark:bg-amber-500/20 dark:text-amber-400 dark:group-hover:bg-amber-500 dark:group-hover:text-white">
                         <i data-lucide="folder" class="h-3.5 w-3.5"></i>
                     </span>
-                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">Categories</span>
+                    <span class="text-xs font-semibold text-slate-600 transition-colors group-hover:text-amber-600 dark:text-slate-400 dark:group-hover:text-amber-400">Categories</span>
                 </div>
                 <div class="mt-3">
                     <span class="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
@@ -427,15 +427,15 @@
                         <path d="M2 12 Q 15 13, 30 11 T 45 10 T 58 6" stroke-linecap="round"/>
                     </svg>
                 </div>
-            </div>
+            </a>
 
             {{-- Metric 4: Tags --}}
-            <div class="rounded-2xl border border-slate-200/80 bg-white p-4.5 shadow-xs transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+            <a href="{{ route('admin.tags.index') }}" wire:navigate class="group block rounded-2xl border border-slate-200/80 bg-white p-4.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-purple-500/50 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-purple-500/50">
                 <div class="flex items-center gap-2">
-                    <span class="grid h-6 w-6 place-items-center rounded-lg bg-purple-50 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400">
+                    <span class="grid h-6 w-6 place-items-center rounded-lg bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-600 group-hover:text-white dark:bg-purple-500/20 dark:text-purple-400 dark:group-hover:bg-purple-500 dark:group-hover:text-white">
                         <i data-lucide="tag" class="h-3.5 w-3.5"></i>
                     </span>
-                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">Tags</span>
+                    <span class="text-xs font-semibold text-slate-600 transition-colors group-hover:text-purple-600 dark:text-slate-400 dark:group-hover:text-purple-400">Tags</span>
                 </div>
                 <div class="mt-3">
                     <span class="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
@@ -450,15 +450,15 @@
                         <path d="M2 16 Q 16 15, 30 9 T 46 8 T 58 4" stroke-linecap="round"/>
                     </svg>
                 </div>
-            </div>
+            </a>
 
             {{-- Metric 5: Comments --}}
-            <div class="rounded-2xl border border-slate-200/80 bg-white p-4.5 shadow-xs transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+            <a href="{{ route('admin.comments.index') }}" wire:navigate class="group block rounded-2xl border border-slate-200/80 bg-white p-4.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-violet-500/50 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-violet-500/50">
                 <div class="flex items-center gap-2">
-                    <span class="grid h-6 w-6 place-items-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400">
+                    <span class="grid h-6 w-6 place-items-center rounded-lg bg-violet-50 text-violet-600 transition-colors group-hover:bg-violet-600 group-hover:text-white dark:bg-violet-500/20 dark:text-violet-400 dark:group-hover:bg-violet-500 dark:group-hover:text-white">
                         <i data-lucide="message-circle" class="h-3.5 w-3.5"></i>
                     </span>
-                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">Comments</span>
+                    <span class="text-xs font-semibold text-slate-600 transition-colors group-hover:text-violet-600 dark:text-slate-400 dark:group-hover:text-violet-400">Comments</span>
                 </div>
                 <div class="mt-3">
                     <span class="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
@@ -473,15 +473,15 @@
                         <path d="M2 8 Q 15 6, 30 11 T 46 14 T 58 16" stroke-linecap="round"/>
                     </svg>
                 </div>
-            </div>
+            </a>
 
             {{-- Metric 6: Total Views --}}
-            <div class="rounded-2xl border border-slate-200/80 bg-white p-4.5 shadow-xs transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+            <a href="{{ route('admin.dashboards.content') }}" wire:navigate class="group block rounded-2xl border border-slate-200/80 bg-white p-4.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-emerald-500/50 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-emerald-500/50">
                 <div class="flex items-center gap-2">
-                    <span class="grid h-6 w-6 place-items-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                    <span class="grid h-6 w-6 place-items-center rounded-lg bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-600 group-hover:text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:group-hover:bg-emerald-500 dark:group-hover:text-white">
                         <i data-lucide="eye" class="h-3.5 w-3.5"></i>
                     </span>
-                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">Total Views</span>
+                    <span class="text-xs font-semibold text-slate-600 transition-colors group-hover:text-emerald-600 dark:text-slate-400 dark:group-hover:text-emerald-400">Total Views</span>
                 </div>
                 <div class="mt-3">
                     <span class="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl dark:text-white">
@@ -496,7 +496,7 @@
                         <path d="M2 18 Q 18 16, 28 10 T 45 7 T 58 3" stroke-linecap="round"/>
                     </svg>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 
