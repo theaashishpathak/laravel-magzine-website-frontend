@@ -301,8 +301,8 @@ class Create extends Component
             'visibility' => ['required', \Illuminate\Validation\Rule::in(Post::VISIBILITIES)],
             'excerpt' => ['nullable', 'string', 'max:2000'],
             'content' => ['nullable', 'string'],
-            'seoMetaTitle' => ['nullable', 'string', 'max:200'],
-            'seoMetaDescription' => ['nullable', 'string', 'max:300'],
+            'seoMetaTitle' => ['nullable', 'string', 'max:60'],
+            'seoMetaDescription' => ['nullable', 'string', 'max:160'],
             'seoFocusKeyword' => ['nullable', 'string', 'max:120'],
             'seoCanonicalUrl' => ['nullable', 'url', 'max:500'],
             'seoRobots' => ['nullable', 'string', 'max:120'],
@@ -311,8 +311,8 @@ class Create extends Component
         ];
 
         if ($isPublishing) {
-            $rules['seoMetaTitle'] = ['required', 'string', 'min:3', 'max:200'];
-            $rules['seoMetaDescription'] = ['required', 'string', 'min:10', 'max:300'];
+            $rules['seoMetaTitle'] = ['required', 'string', 'min:3', 'max:60'];
+            $rules['seoMetaDescription'] = ['required', 'string', 'min:10', 'max:160'];
             $rules['seoFocusKeyword'] = ['required_without:seoMetaKeywords', 'nullable', 'string', 'min:2', 'max:120'];
             $rules['seoMetaKeywords'] = ['required_without:seoFocusKeyword', 'nullable', 'string', 'max:255'];
         }
@@ -327,7 +327,9 @@ class Create extends Component
     {
         return [
             'seoMetaTitle.required' => 'Meta Title is required before this article can be published.',
+            'seoMetaTitle.max' => 'Meta Title must not exceed 60 characters.',
             'seoMetaDescription.required' => 'Meta Description is required before this article can be published.',
+            'seoMetaDescription.max' => 'Meta Description must not exceed 160 characters.',
             'seoFocusKeyword.required_without' => 'Focus Keyword or Meta Keywords are required before this article can be published.',
             'seoMetaKeywords.required_without' => 'Focus Keyword or Meta Keywords are required before this article can be published.',
         ];

@@ -104,6 +104,9 @@ class PostFactory extends Factory
                 'excerpt' => $fragment['excerpt'],
                 'content' => self::generateBody($title, $fragment['excerpt']),
                 'reading_time' => fake()->numberBetween(3, 12).' min read',
+                'meta_title' => Str::limit($title, 60, ''),
+                'meta_description' => Str::limit($fragment['excerpt'], 160, ''),
+                'focus_keyword' => Str::lower((string) $fragment['topic']),
                 'is_published' => $post->status === PostStatus::Published,
                 'translation_status' => $post->status === PostStatus::Published
                     ? 'published'

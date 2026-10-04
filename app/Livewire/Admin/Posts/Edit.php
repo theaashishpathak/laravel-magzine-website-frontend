@@ -14,6 +14,7 @@ use App\Actions\Post\PublishPostAction;
 use App\Actions\Post\UnpublishPostAction;
 use App\Actions\Post\UpdatePostAction;
 use App\Actions\Seo\UpdateSeoMetaAction;
+use App\Enums\PostStatus;
 use App\Enums\PostType;
 use App\Models\Category;
 use App\Models\Language;
@@ -539,11 +540,11 @@ class Edit extends Component
         $focusKw = trim((string) ($activeTranslation['focus_keyword'] ?? $this->seoFocusKeyword));
         $metaKw = trim($this->seoMetaKeywords);
 
-        if ($metaTitle === '' || $metaDesc === '' || ($focusKw === '' && $metaKw === '')) {
-            $this->dispatchDangerToast('Cannot publish: Meta Title, Meta Description, and Keywords are mandatory.');
+        if ($metaTitle === '' || mb_strlen($metaTitle) > 60 || $metaDesc === '' || mb_strlen($metaDesc) > 160 || ($focusKw === '' && $metaKw === '')) {
+            $this->dispatchDangerToast('Cannot publish: Meta Title (max 60 chars), Meta Description (max 160 chars), and Keywords are mandatory.');
             $this->validate([
-                'seoMetaTitle' => ['required', 'string', 'min:3', 'max:200'],
-                'seoMetaDescription' => ['required', 'string', 'min:10', 'max:300'],
+                'seoMetaTitle' => ['required', 'string', 'min:3', 'max:60'],
+                'seoMetaDescription' => ['required', 'string', 'min:10', 'max:160'],
                 'seoFocusKeyword' => ['required_without:seoMetaKeywords', 'nullable', 'string', 'min:2', 'max:120'],
                 'seoMetaKeywords' => ['required_without:seoFocusKeyword', 'nullable', 'string', 'max:255'],
             ]);
@@ -699,8 +700,8 @@ class Edit extends Component
             'visibility' => ['required', \Illuminate\Validation\Rule::in(Post::VISIBILITIES)],
             'excerpt' => ['nullable', 'string', 'max:2000'],
             'content' => ['nullable', 'string'],
-            'seoMetaTitle' => ['nullable', 'string', 'max:16'],
-            'seoMetaDescription' => ['nullable', 'string', 'max:300'],
+            'seoMetaTitle' => ['nullable', 'string', 'max:60'],
+            'seoMetaDescription' => ['nullable', 'string', 'max:160'],
             'seoFocusKeyword' => ['nullable', 'string', 'max:120'],
             'seoCanonicalUrl' => ['nullable', 'url', 'max:500'],
             'seoRobots' => ['nullable', 'string', 'max:120'],
@@ -709,8 +710,8 @@ class Edit extends Component
         ];
 
         if ($this->post->status === PostStatus::Published) {
-            $rules['seoMetaTitle'] = ['required', 'string', 'min:3', 'max:200'];
-            $rules['seoMetaDescription'] = ['required', 'string', 'min:10', 'max:300'];
+            $rules['seoMetaTitle'] = ['required', 'string', 'min:3', 'max:60'];
+            $rules['seoMetaDescription'] = ['required', 'string', 'min:10', 'max:160'];
             $rules['seoFocusKeyword'] = ['required_without:seoMetaKeywords', 'nullable', 'string', 'min:2', 'max:120'];
             $rules['seoMetaKeywords'] = ['required_without:seoFocusKeyword', 'nullable', 'string', 'max:255'];
         }
@@ -725,7 +726,9 @@ class Edit extends Component
     {
         return [
             'seoMetaTitle.required' => 'Meta Title is required before this article can be published.',
+            'seoMetaTitle.max' => 'Meta Title must not exceed 60 characters.',
             'seoMetaDescription.required' => 'Meta Description is required before this article can be published.',
+            'seoMetaDescription.max' => 'Meta Description must not exceed 160 characters.',
             'seoFocusKeyword.required_without' => 'Focus Keyword or Meta Keywords are required before this article can be published.',
             'seoMetaKeywords.required_without' => 'Focus Keyword or Meta Keywords are required before this article can be published.',
         ];

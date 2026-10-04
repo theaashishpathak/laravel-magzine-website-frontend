@@ -130,7 +130,7 @@
                 <i data-lucide="shield-alert" class="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5"></i>
                 <div class="text-amber-800 dark:text-amber-200">
                     <span class="font-bold">Required to Publish:</span>
-                    Articles cannot be published until <span class="font-semibold underline decoration-amber-400">Meta Title</span>, <span class="font-semibold underline decoration-amber-400">Meta Description</span>, and <span class="font-semibold underline decoration-amber-400">Keywords</span> are filled.
+                    Articles cannot be published until <span class="font-semibold underline decoration-amber-400">Meta Title</span> (max 60 chars), <span class="font-semibold underline decoration-amber-400">Meta Description</span> (max 160 chars), and <span class="font-semibold underline decoration-amber-400">Keywords</span> are filled.
                 </div>
             </div>
 
@@ -157,13 +157,14 @@
                         <span class="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:bg-rose-500/20 dark:text-rose-300">Required</span>
                     </label>
                     @php($mtLen = mb_strlen($seoMetaTitle))
-                    <span class="font-mono text-xs {{ $mtLen === 0 || $mtLen > 70 ? 'text-rose-500' : ($mtLen >= 50 && $mtLen <= 60 ? 'text-emerald-600' : 'text-amber-500') }}">
+                    <span class="font-mono text-xs {{ $mtLen === 0 || $mtLen > 60 ? 'text-rose-500 font-bold' : ($mtLen >= 50 && $mtLen <= 60 ? 'text-emerald-600 font-bold' : 'text-slate-500') }}">
                         {{ $mtLen }} / 60
                     </span>
                 </div>
                 <input type="text"
                        wire:model.live.debounce.400ms="seoMetaTitle"
-                       placeholder="Enter concise search engine title (Required to publish)"
+                       maxlength="60"
+                       placeholder="Enter concise search engine title (Max 60 chars — Required)"
                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-950 dark:focus:ring-emerald-500/20 @error('seoMetaTitle') border-rose-500 ring-1 ring-rose-500 @enderror">
                 @error('seoMetaTitle') <p class="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">{{ $message }}</p> @enderror
             </div>
@@ -177,13 +178,14 @@
                         <span class="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:bg-rose-500/20 dark:text-rose-300">Required</span>
                     </label>
                     @php($mdLen = mb_strlen($seoMetaDescription))
-                    <span class="font-mono text-xs {{ $mdLen === 0 || $mdLen > 180 ? 'text-rose-500' : ($mdLen >= 120 && $mdLen <= 160 ? 'text-emerald-600' : 'text-amber-500') }}">
+                    <span class="font-mono text-xs {{ $mdLen === 0 || $mdLen > 160 ? 'text-rose-500 font-bold' : ($mdLen >= 120 && $mdLen <= 160 ? 'text-emerald-600 font-bold' : 'text-slate-500') }}">
                         {{ $mdLen }} / 160
                     </span>
                 </div>
                 <textarea wire:model.live.debounce.400ms="seoMetaDescription"
                           rows="3"
-                          placeholder="Compelling summary shown in Google search results (Required to publish)"
+                          maxlength="160"
+                          placeholder="Compelling summary shown in Google search results (Max 160 chars — Required)"
                           class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-950 dark:focus:ring-emerald-500/20 @error('seoMetaDescription') border-rose-500 ring-1 ring-rose-500 @enderror"></textarea>
                 @error('seoMetaDescription') <p class="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">{{ $message }}</p> @enderror
             </div>

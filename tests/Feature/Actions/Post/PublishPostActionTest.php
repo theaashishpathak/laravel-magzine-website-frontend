@@ -121,3 +121,21 @@ test('archive is idempotent', function (): void {
 
     expect($result->status)->toBe(PostStatus::Archived);
 });
+
+test('publish throws when meta title exceeds 60 chars', function (): void {
+    $post = Post::factory()->state(['status' => PostStatus::Approved])->create();
+    $post->translations()->update(['meta_title' => str_repeat('a', 61)]);
+
+    app(PublishPostAction::class)->handle($post);
+})->throws(InvalidArgumentException::class, 'valid Meta Title (between 1 and 60 characters)');
+
+test('publish throws when meta description exceeds 160 chars', function (): void {
+    $post = Post::factory()->state(['status' => PostStatus::Approved])->create();
+    $post->translations()->update([
+        'meta_title' => 'Valid Title',
+        'meta_description' => str_repeat('b', 161),
+    ]);
+
+    app(PublishPostAction::class)->handle($post);
+})->throws(InvalidArgumentException::class, 'valid Meta Description (between 1 and 160 characters)');
+

@@ -132,9 +132,21 @@ class PublishPostAction
         $focusKeyword = trim((string) ($translation?->focus_keyword ?? ''));
         $metaKeywords = trim((string) ($post->seoMetas()->first()?->meta_keywords ?? ''));
 
-        if ($metaTitle === '' || $metaDescription === '' || ($focusKeyword === '' && $metaKeywords === '')) {
+        if ($metaTitle === '' || mb_strlen($metaTitle) > 60) {
             throw new InvalidArgumentException(
-                'The article cannot be published until Meta Title, Meta Description, and Keywords (focus keyword or meta keywords) are provided.'
+                'The article cannot be published until a valid Meta Title (between 1 and 60 characters) is provided.'
+            );
+        }
+
+        if ($metaDescription === '' || mb_strlen($metaDescription) > 160) {
+            throw new InvalidArgumentException(
+                'The article cannot be published until a valid Meta Description (between 1 and 160 characters) is provided.'
+            );
+        }
+
+        if ($focusKeyword === '' && $metaKeywords === '') {
+            throw new InvalidArgumentException(
+                'The article cannot be published until Keywords (focus keyword or meta keywords) are provided.'
             );
         }
     }

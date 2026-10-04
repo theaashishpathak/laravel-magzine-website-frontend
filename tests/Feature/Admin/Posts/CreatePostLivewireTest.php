@@ -155,6 +155,25 @@ test('savePublish moves status to Published when user has permission and SEO fie
     expect($post->published_at)->not->toBeNull();
 });
 
+test('savePublish rejects publishing when meta title exceeds 60 chars or meta description exceeds 160 chars', function (): void {
+    $admin = createUser('Admin');
+    $language = Language::query()->default()->firstOrFail();
+
+    Livewire::actingAs($admin)
+        ->test(Create::class)
+        ->set('title', 'Direct-publish length boundary test')
+        ->set('content', '<p>Body</p>')
+        ->set('defaultLanguageId', $language->id)
+        ->set('seoMetaTitle', str_repeat('a', 61))
+        ->set('seoMetaDescription', str_repeat('b', 161))
+        ->set('seoFocusKeyword', 'valid keyword')
+        ->call('savePublish')
+        ->assertHasErrors([
+            'seoMetaTitle' => 'max',
+            'seoMetaDescription' => 'max',
+        ]);
+});
+
 test('subscribers cannot mount the Create component', function (): void {
     $subscriber = createUser('Subscriber');
 
