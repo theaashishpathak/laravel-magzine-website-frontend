@@ -71,21 +71,111 @@
 
         {{-- Sidebar — actions + workflow --}}
         <aside class="space-y-4">
+            {{-- Author / Creator Info card for reviewer / admin --}}
+            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div class="border-b border-slate-100 bg-slate-50/60 px-5 py-3 dark:border-slate-800 dark:bg-slate-950/40">
+                    <h3 class="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                        <i data-lucide="user-check" class="h-3.5 w-3.5 text-indigo-500"></i>
+                        Post Author
+                    </h3>
+                </div>
+                <div class="space-y-3.5 p-4">
+                    @php($author = $post->author)
+                    @if ($author)
+                        <div class="flex items-center gap-3">
+                            <div class="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-tr from-indigo-500 to-violet-500 font-bold text-white shadow-sm">
+                                {{ strtoupper(substr($author->name, 0, 2)) }}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="truncate text-sm font-bold text-slate-800 dark:text-slate-100">
+                                    {{ $author->name }}
+                                </p>
+                                <p class="truncate text-xs text-slate-500 dark:text-slate-400">
+                                    {{ $author->email }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 border-t border-slate-100 pt-3 text-xs dark:border-slate-800">
+                            <div class="flex items-center justify-between text-slate-500">
+                                <span>Role</span>
+                                <span class="rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
+                                    {{ $author->roles->first()?->name ?? 'Author' }}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between text-slate-500">
+                                <span>Submitted</span>
+                                <span class="font-medium text-slate-700 dark:text-slate-300">
+                                    {{ $post->created_at?->format('M d, Y · h:i A') }}
+                                </span>
+                            </div>
+                        </div>
+                    @else
+                        <p class="text-xs italic text-slate-400">No author assigned to this post.</p>
+                    @endif
+
+                    @can('posts.publish')
+                        {{-- Admins / Editors can reassign the author --}}
+                        <div class="border-t border-slate-100 pt-3 dark:border-slate-800">
+                            <label class="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                Reassign Author
+                            </label>
+                            <select wire:model="authorId"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200">
+                                @foreach ($this->authors as $eligibleAuthor)
+                                    <option value="{{ $eligibleAuthor->id }}">
+                                        {{ $eligibleAuthor->name }} ({{ $eligibleAuthor->email }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endcan
+                </div>
+            </div>
+
             @include('livewire.admin.posts._featured-image-card')
 
             <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <div class="border-b border-slate-100 bg-slate-50/60 px-5 py-3 dark:border-slate-800 dark:bg-slate-950/40">
                     <h3 class="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
-                        <i data-lucide="save" class="h-3.5 w-3.5"></i>
-                        Save Changes
+                        <i data-lucide="send-horizontal" class="h-3.5 w-3.5 text-indigo-500"></i>
+                        Actions
                     </h3>
                 </div>
-                <div class="p-4">
+                <div class="space-y-2.5 p-4">
+                    @if ($this->canSubmitForReview)
+                        {{-- Submit for Review --}}
+                        <button type="button" wire:click="submitForReview"
+                                wire:loading.attr="disabled"
+                                wire:target="submitForReview"
+                                class="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:from-indigo-700 hover:to-indigo-600 hover:shadow disabled:cursor-not-allowed disabled:opacity-60">
+                            <i data-lucide="send-horizontal" class="h-4 w-4 transition group-hover:translate-x-0.5" wire:loading.remove wire:target="submitForReview"></i>
+                            <i data-lucide="loader-2" class="h-4 w-4 animate-spin" wire:loading wire:target="submitForReview"></i>
+                            <span wire:loading.remove wire:target="submitForReview">Submit for Review</span>
+                            <span wire:loading wire:target="submitForReview">Submitting…</span>
+                        </button>
+                    @endif
+
+                    @if ($this->canPublish && $post->status->value !== 'published')
+                        {{-- Direct publish for Super Admin / Admin --}}
+                        <button type="button" wire:click="publish"
+                                wire:loading.attr="disabled"
+                                wire:target="publish"
+                                class="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:from-emerald-700 hover:to-emerald-600 hover:shadow disabled:cursor-not-allowed disabled:opacity-60">
+                            <i data-lucide="zap" class="h-4 w-4" wire:loading.remove wire:target="publish"></i>
+                            <i data-lucide="loader-2" class="h-4 w-4 animate-spin" wire:loading wire:target="publish"></i>
+                            <span wire:loading.remove wire:target="publish">Publish Now</span>
+                            <span wire:loading wire:target="publish">Publishing…</span>
+                        </button>
+                    @endif
+
+                    {{-- Save Changes button --}}
                     <button type="button" wire:click="save"
-                            wire:loading.attr="disabled" wire:target="save"
-                            class="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:from-indigo-700 hover:to-indigo-600 disabled:cursor-not-allowed disabled:opacity-60">
-                        <i data-lucide="save" class="h-4 w-4" wire:loading.remove wire:target="save"></i>
-                        <i data-lucide="loader-2" class="h-4 w-4 animate-spin" wire:loading wire:target="save"></i>
+                            wire:loading.attr="disabled"
+                            wire:target="save"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-xl {{ $this->canSubmitForReview || ($this->canPublish && $post->status->value !== 'published') ? 'border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100' : 'bg-gradient-to-r from-indigo-600 to-indigo-500 px-4 py-3 text-sm font-bold text-white shadow-sm hover:from-indigo-700 hover:to-indigo-600' }} transition disabled:cursor-not-allowed disabled:opacity-60">
+                        <i data-lucide="save" class="h-3.5 w-3.5" wire:loading.remove wire:target="save"></i>
+                        <i data-lucide="loader-2" class="h-3.5 w-3.5 animate-spin" wire:loading wire:target="save"></i>
                         <span wire:loading.remove wire:target="save">Save Changes</span>
                         <span wire:loading wire:target="save">Saving…</span>
                     </button>
@@ -106,13 +196,6 @@
                 @endif
 
                 <div class="space-y-2">
-                    @if ($this->canSubmitForReview)
-                        <button type="button" wire:click="submitForReview"
-                                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-700">
-                            <i data-lucide="send" class="h-3.5 w-3.5"></i>
-                            Submit for Review
-                        </button>
-                    @endif
 
                     @if ($this->canApprove)
                         <button type="button" wire:click="approve"
@@ -215,4 +298,7 @@
 
     {{-- Media picker modal (opens via openFeaturedImagePicker() dispatched event) --}}
     <livewire:admin.media.media-picker-modal />
+
+    {{-- Missing SEO details alert modal --}}
+    @include('livewire.admin.posts._missing-seo-modal')
 </div>

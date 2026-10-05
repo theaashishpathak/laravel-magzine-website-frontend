@@ -23,6 +23,7 @@ use App\Models\Post;
 use App\Models\PostTranslation;
 use App\Models\SeoMeta;
 use App\Models\Tag;
+use App\Models\User;
 use App\Services\Seo\DataTransferObjects\SeoScoreInput;
 use App\Services\Seo\DataTransferObjects\SeoScoreResult;
 use App\Services\Seo\SeoScoreService;
@@ -130,12 +131,27 @@ class Edit extends Component
      */
     public string $editorialNote = '';
 
+    public ?int $authorId = null;
+
+    public bool $showMissingSeoModal = false;
+
+    /**
+     * @var list<string>
+     */
+    public array $missingSeoFields = [];
+
+    public function closeMissingSeoModal(): void
+    {
+        $this->showMissingSeoModal = false;
+    }
+
     public function mount(Post $post): void
     {
         $this->authorize('update', $post);
 
-        $this->post = $post->load(['translations', 'tags']);
+        $this->post = $post->load(['translations', 'tags', 'author.roles']);
 
+        $this->authorId = $post->author_id;
         $this->type = $post->type->value;
         $this->categoryId = $post->category_id;
         $this->defaultLanguageId = $post->default_language_id;
@@ -267,9 +283,50 @@ class Edit extends Component
         $this->seoOgDescription = (string) ($advanced->og_description ?? '');
         $this->seoTwitterTitle = (string) ($advanced->twitter_title ?? '');
         $this->seoTwitterDescription = (string) ($advanced->twitter_description ?? '');
+
+        if ($this->seoMetaTitle === '' && ! empty($advanced?->meta_title)) {
+            $this->seoMetaTitle = (string) $advanced->meta_title;
+        }
+        if ($this->seoMetaDescription === '' && ! empty($advanced?->meta_description)) {
+            $this->seoMetaDescription = (string) $advanced->meta_description;
+        }
+        if ($this->seoFocusKeyword === '' && ! empty($advanced?->focus_keyword)) {
+            $this->seoFocusKeyword = (string) $advanced->focus_keyword;
+        }
+        if ($this->seoCanonicalUrl === '' && ! empty($advanced?->canonical_url)) {
+            $this->seoCanonicalUrl = (string) $advanced->canonical_url;
+        }
     }
 
-    public function save(UpdatePostAction $updatePost, UpdateSeoMetaAction $updateSeo): void
+    public function updatedSeoMetaTitle(string $value): void
+    {
+        if (trim($value) !== '' && mb_strlen(trim($value)) <= 60) {
+            $this->resetErrorBag('seoMetaTitle');
+        }
+    }
+
+    public function updatedSeoMetaDescription(string $value): void
+    {
+        if (trim($value) !== '' && mb_strlen(trim($value)) <= 160) {
+            $this->resetErrorBag('seoMetaDescription');
+        }
+    }
+
+    public function updatedSeoFocusKeyword(string $value): void
+    {
+        if (trim($value) !== '') {
+            $this->resetErrorBag(['seoFocusKeyword', 'seoMetaKeywords']);
+        }
+    }
+
+    public function updatedSeoMetaKeywords(string $value): void
+    {
+        if (trim($value) !== '') {
+            $this->resetErrorBag(['seoFocusKeyword', 'seoMetaKeywords']);
+        }
+    }
+
+    public function save(UpdatePostAction $updatePost, UpdateSeoMetaAction $updateSeo): bool
     {
         $this->authorize('update', $this->post);
         $this->flushScalarsIntoActiveTranslation();
@@ -290,9 +347,13 @@ class Edit extends Component
             $this->loadTranslationsFromModel();
             $this->loadActiveTranslationIntoScalars();
             $this->dispatchSuccessToast('Post updated.');
+
+            return true;
         } catch (Throwable $exception) {
             report($exception);
             $this->dispatchDangerToast('Failed to update post: '.$exception->getMessage());
+
+            return false;
         }
     }
 
@@ -443,15 +504,18 @@ class Edit extends Component
     }
 
     /**
-     * Payload for the polymorphic seo_metas row. Basic SEO fields are
-     * intentionally NOT included here — those go into post_translations
-     * via the main UpdatePostAction translations array.
+     * Payload for the polymorphic seo_metas row. Synchronized with both basic
+     * and advanced SEO fields so neither table falls out of date.
      *
      * @return array<string, mixed>
      */
     private function buildAdvancedSeoPayload(): array
     {
         return [
+            'meta_title' => $this->seoMetaTitle,
+            'meta_description' => $this->seoMetaDescription,
+            'focus_keyword' => $this->seoFocusKeyword,
+            'canonical_url' => $this->seoCanonicalUrl,
             'robots' => $this->seoRobots,
             'schema_type' => $this->seoSchemaType,
             'meta_keywords' => $this->seoMetaKeywords,
@@ -463,26 +527,86 @@ class Edit extends Component
         ];
     }
 
-    public function submitForReview(SubmitForReviewAction $submit): void
-    {
+    public function submitForReview(
+        SubmitForReviewAction $submit,
+        UpdatePostAction $updatePost,
+        UpdateSeoMetaAction $updateSeo,
+    ): void {
         $this->authorize('submitForReview', $this->post);
 
+        $this->flushScalarsIntoActiveTranslation();
+
+        $activeTranslation = $this->translations[$this->activeLanguageId] ?? [];
+        $metaTitle = trim((string) ($activeTranslation['meta_title'] ?? $this->seoMetaTitle));
+        $metaDesc = trim((string) ($activeTranslation['meta_description'] ?? $this->seoMetaDescription));
+        $focusKw = trim((string) ($activeTranslation['focus_keyword'] ?? $this->seoFocusKeyword));
+        $metaKw = trim($this->seoMetaKeywords);
+
+        $missing = [];
+        if ($this->featuredImageId === null) {
+            $missing[] = 'Featured Image (required)';
+        }
+        if ($metaTitle === '') {
+            $missing[] = 'Meta Title (required, max 60 characters)';
+        }
+        if ($metaDesc === '') {
+            $missing[] = 'Meta Description (required, max 160 characters)';
+        }
+        if ($focusKw === '' && $metaKw === '') {
+            $missing[] = 'Focus Keyword or Meta Keywords (required)';
+        }
+
+        if (! empty($missing)) {
+            $this->missingSeoFields = $missing;
+            $this->showMissingSeoModal = true;
+            $this->dispatchDangerToast('Cannot submit for review: Featured Image and SEO fields are mandatory.');
+            $this->validate([
+                'featuredImageId' => ['required', 'integer', 'exists:media,id'],
+                'seoMetaTitle' => ['required', 'string', 'min:3', 'max:60'],
+                'seoMetaDescription' => ['required', 'string', 'min:10', 'max:160'],
+                'seoFocusKeyword' => ['required_without:seoMetaKeywords', 'nullable', 'string', 'min:2', 'max:120'],
+                'seoMetaKeywords' => ['required_without:seoFocusKeyword', 'nullable', 'string', 'max:255'],
+            ]);
+
+            return;
+        }
+
         try {
-            $submit->handle($this->post->fresh(), auth()->user(), note: $this->editorialNote ?: null);
-            $this->reloadPost();
+            // Auto-save pending form edits so content & SEO changes are persisted
+            if (! $this->save($updatePost, $updateSeo)) {
+                return;
+            }
+
+            $freshPost = $this->post->fresh();
+            $submit->handle($freshPost, auth()->user(), note: $this->editorialNote ?: null);
             $this->editorialNote = '';
             $this->dispatchSuccessToast('Submitted for editorial review.');
+
+            if (! auth()->user()?->can('update', $this->post->fresh())) {
+                $this->redirect(route('admin.posts.index'), navigate: true);
+                return;
+            }
+
+            $this->reloadPost();
         } catch (Throwable $exception) {
             report($exception);
             $this->dispatchDangerToast('Submit failed: '.$exception->getMessage());
         }
     }
 
-    public function approve(ApprovePostAction $approve): void
-    {
+    public function approve(
+        ApprovePostAction $approve,
+        UpdatePostAction $updatePost,
+        UpdateSeoMetaAction $updateSeo,
+    ): void {
         $this->authorize('approve', $this->post);
 
         try {
+            // Auto-save any edits made by the reviewer before approving
+            if (! $this->save($updatePost, $updateSeo)) {
+                return;
+            }
+
             $approve->handle($this->post->fresh(), auth()->user(), note: $this->editorialNote ?: null);
             $this->reloadPost();
             $this->editorialNote = '';
@@ -540,9 +664,10 @@ class Edit extends Component
         $focusKw = trim((string) ($activeTranslation['focus_keyword'] ?? $this->seoFocusKeyword));
         $metaKw = trim($this->seoMetaKeywords);
 
-        if ($metaTitle === '' || mb_strlen($metaTitle) > 60 || $metaDesc === '' || mb_strlen($metaDesc) > 160 || ($focusKw === '' && $metaKw === '')) {
-            $this->dispatchDangerToast('Cannot publish: Meta Title (max 60 chars), Meta Description (max 160 chars), and Keywords are mandatory.');
+        if ($this->featuredImageId === null || $metaTitle === '' || mb_strlen($metaTitle) > 60 || $metaDesc === '' || mb_strlen($metaDesc) > 160 || ($focusKw === '' && $metaKw === '')) {
+            $this->dispatchDangerToast('Cannot publish: Featured Image, Meta Title (max 60 chars), Meta Description (max 160 chars), and Keywords are mandatory.');
             $this->validate([
+                'featuredImageId' => ['required', 'integer', 'exists:media,id'],
                 'seoMetaTitle' => ['required', 'string', 'min:3', 'max:60'],
                 'seoMetaDescription' => ['required', 'string', 'min:10', 'max:160'],
                 'seoFocusKeyword' => ['required_without:seoMetaKeywords', 'nullable', 'string', 'min:2', 'max:120'],
@@ -607,6 +732,7 @@ class Edit extends Component
 
         return [
             'type' => $this->type,
+            'author_id' => $this->authorId ?? $this->post->author_id,
             'category_id' => $this->categoryId,
             'visibility' => $this->visibility,
             'featured_image_id' => $this->featuredImageId,
@@ -725,12 +851,13 @@ class Edit extends Component
     protected function messages(): array
     {
         return [
-            'seoMetaTitle.required' => 'Meta Title is required before this article can be published.',
+            'featuredImageId.required' => 'A featured image is required before this article can be reviewed or published.',
+            'seoMetaTitle.required' => 'Meta Title is required before this article can be reviewed or published.',
             'seoMetaTitle.max' => 'Meta Title must not exceed 60 characters.',
-            'seoMetaDescription.required' => 'Meta Description is required before this article can be published.',
+            'seoMetaDescription.required' => 'Meta Description is required before this article can be reviewed or published.',
             'seoMetaDescription.max' => 'Meta Description must not exceed 160 characters.',
-            'seoFocusKeyword.required_without' => 'Focus Keyword or Meta Keywords are required before this article can be published.',
-            'seoMetaKeywords.required_without' => 'Focus Keyword or Meta Keywords are required before this article can be published.',
+            'seoFocusKeyword.required_without' => 'Focus Keyword or Meta Keywords are required before this article can be reviewed or published.',
+            'seoMetaKeywords.required_without' => 'Focus Keyword or Meta Keywords are required before this article can be reviewed or published.',
         ];
     }
 
@@ -819,6 +946,15 @@ class Edit extends Component
     public function canArchive(): bool
     {
         return Gate::allows('archive', $this->post);
+    }
+
+    #[Computed]
+    public function authors(): \Illuminate\Support\Collection
+    {
+        return User::query()
+            ->whereHas('roles', fn ($q) => $q->whereIn('name', ['Author', 'Editor', 'Admin', 'Contributor', 'Super Admin']))
+            ->orderBy('name')
+            ->get(['id', 'name', 'email']);
     }
 
     /**
@@ -967,6 +1103,9 @@ class Edit extends Component
         }
 
         $this->featuredImageId = isset($payload['mediaId']) ? (int) $payload['mediaId'] : null;
+        if ($this->featuredImageId !== null) {
+            $this->resetErrorBag('featuredImageId');
+        }
     }
 
     #[Computed]
