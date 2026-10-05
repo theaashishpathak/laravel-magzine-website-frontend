@@ -50,6 +50,28 @@
 
         {{-- Sidebar — actions + meta --}}
         <aside class="space-y-4">
+            @if ($this->canPublishDirectly)
+                {{-- Author selector for Admins --}}
+                <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <div class="border-b border-slate-100 bg-slate-50/60 px-5 py-3 dark:border-slate-800 dark:bg-slate-950/40">
+                        <h3 class="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                            <i data-lucide="user-check" class="h-3.5 w-3.5 text-indigo-500"></i>
+                            Author
+                        </h3>
+                    </div>
+                    <div class="p-4">
+                        <select wire:model="authorId"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200">
+                            @foreach ($this->authors as $eligibleAuthor)
+                                <option value="{{ $eligibleAuthor->id }}">
+                                    {{ $eligibleAuthor->name }} ({{ $eligibleAuthor->email }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            @endif
+
             @include('livewire.admin.posts._featured-image-card')
 
             <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -61,19 +83,8 @@
                 </div>
 
                 <div class="space-y-2.5 p-4">
-                    {{-- Primary action: Save & Submit for Review --}}
-                    <button type="button" wire:click="saveAndSubmit"
-                            wire:loading.attr="disabled"
-                            wire:target="saveAndSubmit"
-                            class="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:from-indigo-700 hover:to-indigo-600 hover:shadow disabled:cursor-not-allowed disabled:opacity-60">
-                        <i data-lucide="send-horizontal" class="h-4 w-4 transition group-hover:translate-x-0.5" wire:loading.remove wire:target="saveAndSubmit"></i>
-                        <i data-lucide="loader-2" class="h-4 w-4 animate-spin" wire:loading wire:target="saveAndSubmit"></i>
-                        <span wire:loading.remove wire:target="saveAndSubmit">Submit for Review</span>
-                        <span wire:loading wire:target="saveAndSubmit">Submitting…</span>
-                    </button>
-
-                    {{-- Direct publish — only if user has the permission --}}
                     @if ($this->canPublishDirectly)
+                        {{-- Direct publish for Super Admin / Admin --}}
                         <button type="button" wire:click="savePublish"
                                 wire:loading.attr="disabled"
                                 wire:target="savePublish"
@@ -82,6 +93,17 @@
                             <i data-lucide="loader-2" class="h-4 w-4 animate-spin" wire:loading wire:target="savePublish"></i>
                             <span wire:loading.remove wire:target="savePublish">Publish Now</span>
                             <span wire:loading wire:target="savePublish">Publishing…</span>
+                        </button>
+                    @else
+                        {{-- Submit for editorial review for Authors / Contributors --}}
+                        <button type="button" wire:click="saveAndSubmit"
+                                wire:loading.attr="disabled"
+                                wire:target="saveAndSubmit"
+                                class="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:from-indigo-700 hover:to-indigo-600 hover:shadow disabled:cursor-not-allowed disabled:opacity-60">
+                            <i data-lucide="send-horizontal" class="h-4 w-4 transition group-hover:translate-x-0.5" wire:loading.remove wire:target="saveAndSubmit"></i>
+                            <i data-lucide="loader-2" class="h-4 w-4 animate-spin" wire:loading wire:target="saveAndSubmit"></i>
+                            <span wire:loading.remove wire:target="saveAndSubmit">Submit for Review</span>
+                            <span wire:loading wire:target="saveAndSubmit">Submitting…</span>
                         </button>
                     @endif
 
@@ -106,4 +128,7 @@
 
     {{-- Media picker modal (opens via openFeaturedImagePicker() dispatched event) --}}
     <livewire:admin.media.media-picker-modal />
+
+    {{-- Missing SEO details alert modal --}}
+    @include('livewire.admin.posts._missing-seo-modal')
 </div>

@@ -49,13 +49,20 @@
         @else
             <button type="button"
                     wire:click="openFeaturedImagePicker"
-                    class="group flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 text-slate-500 transition hover:border-sky-500 hover:bg-sky-50/60 hover:text-sky-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400">
+                    class="group flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed @error('featuredImageId') border-rose-400 bg-rose-50/30 text-rose-600 dark:border-rose-500 dark:bg-rose-950/20 dark:text-rose-400 @else border-slate-300 bg-slate-50 text-slate-500 hover:border-sky-500 hover:bg-sky-50/60 hover:text-sky-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400 @enderror transition">
                 <span class="grid h-10 w-10 place-items-center rounded-xl bg-white text-slate-400 shadow-sm transition group-hover:bg-sky-100 group-hover:text-sky-600 dark:bg-slate-800 dark:text-slate-500">
                     <i data-lucide="image-plus" class="h-5 w-5"></i>
                 </span>
-                <p class="text-xs font-semibold">Choose Featured Image</p>
+                <p class="text-xs font-semibold">Choose Featured Image <span class="text-rose-500">*</span></p>
                 <p class="text-[10px] text-slate-400">PNG, JPG, WebP up to 10 MB</p>
             </button>
         @endif
+
+        @error('featuredImageId')
+            <div class="mt-2.5 flex items-center gap-1.5 rounded-lg bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
+                <i data-lucide="alert-circle" class="h-3.5 w-3.5 flex-shrink-0"></i>
+                <span>{{ $message }}</span>
+            </div>
+        @enderror
     </div>
 </div>
