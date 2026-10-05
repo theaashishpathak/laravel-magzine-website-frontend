@@ -4,17 +4,17 @@ namespace App\Http\Responses;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
 
-class LoginResponse implements LoginResponseContract
+class RegisterResponse implements RegisterResponseContract
 {
     /**
-     * Redirect users to the dashboard after login.
+     * Redirect users to the author dashboard after registration.
      */
     public function toResponse($request): JsonResponse|RedirectResponse
     {
         if ($request->wantsJson()) {
-            return new JsonResponse('', 204);
+            return new JsonResponse('', 201);
         }
 
         $intended = $request->hasSession() ? $request->session()->pull('url.intended') : null;
@@ -22,6 +22,6 @@ class LoginResponse implements LoginResponseContract
             return redirect($intended);
         }
 
-        return redirect()->route('dashboard');
+        return redirect()->route('dashboard.author');
     }
 }

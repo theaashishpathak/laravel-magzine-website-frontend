@@ -40,12 +40,12 @@ class CreateNewUser implements CreatesNewUsers
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'password' => Hash::make($input['password']),
-                'portal_type' => 'visitor',
+                'portal_type' => 'author',
                 'status' => User::STATUS_ACTIVE,
                 'email_verified_at' => now(),
             ]);
 
-            $user->assignRole('Subscriber');
+            $user->assignRole('Author');
 
             return $user;
         });

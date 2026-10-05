@@ -29,8 +29,7 @@
                 <h1 class="mt-6 text-2xl font-bold">Create your account</h1>
                 <p class="mt-1 text-xs font-medium uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-300">
                     {{ $appTagline }}</p>
-                <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">Join {{ $companyName }} to bookmark, follow
-                    authors, and more.</p>
+                <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">Join {{ $companyName }} to start writing, publishing, and managing your stories.</p>
             </div>
 
             <form action="{{ route('register') }}" method="POST" class="mt-8 space-y-4" id="register-form">
