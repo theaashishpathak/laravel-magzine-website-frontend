@@ -37,7 +37,8 @@
     $dashOffset = $circumference - ($circumference * $score->overall / 100);
 @endphp
 
-<div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
+<div id="seo-panel"
+     class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
      x-data="{ open: true, openAdvanced: false }">
 
     {{-- Header — collapsible toggle --}}
@@ -129,34 +130,48 @@
             <div class="flex items-start gap-3 rounded-xl border border-amber-200/80 bg-amber-50/70 p-3.5 text-xs dark:border-amber-500/20 dark:bg-amber-500/10">
                 <i data-lucide="shield-alert" class="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5"></i>
                 <div class="text-amber-800 dark:text-amber-200">
-                    <span class="font-bold">Required to Publish:</span>
-                    Articles cannot be published until <span class="font-semibold underline decoration-amber-400">Meta Title</span> (max 60 chars), <span class="font-semibold underline decoration-amber-400">Meta Description</span> (max 160 chars), and <span class="font-semibold underline decoration-amber-400">Keywords</span> are filled.
+                    <span class="font-bold">Required for Review & Publication:</span>
+                    Articles cannot be submitted for editorial review or published until <span class="font-semibold underline decoration-amber-400">Meta Title</span> (max 60 chars), <span class="font-semibold underline decoration-amber-400">Meta Description</span> (max 160 chars), and <span class="font-semibold underline decoration-amber-400">Keywords</span> are filled.
                 </div>
             </div>
 
             {{-- Focus keyword --}}
+            @php($kwValid = trim($seoFocusKeyword) !== '' || trim($seoMetaKeywords) !== '')
             <div>
                 <label class="mb-1.5 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                    <i data-lucide="target" class="h-3.5 w-3.5 text-emerald-500"></i>
+                    <i data-lucide="target" class="h-3.5 w-3.5 {{ $kwValid ? 'text-emerald-500' : 'text-slate-400' }}"></i>
                     <span>Focus Keyword</span>
-                    <span class="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:bg-rose-500/20 dark:text-rose-300">Required</span>
+                    @if ($kwValid)
+                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">
+                            <i data-lucide="check" class="h-3 w-3"></i> Completed
+                        </span>
+                    @else
+                        <span class="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:bg-rose-500/20 dark:text-rose-300">Required</span>
+                    @endif
                 </label>
                 <input type="text"
                        wire:model.live.debounce.400ms="seoFocusKeyword"
-                       placeholder="e.g. ai content marketing (Required to publish)"
-                       class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-950 dark:focus:ring-emerald-500/20 @error('seoFocusKeyword') border-rose-500 ring-1 ring-rose-500 @enderror">
+                       placeholder="e.g. ai content marketing (Required for review & publish)"
+                       class="w-full rounded-xl border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:bg-slate-950 dark:focus:ring-emerald-500/20 @error('seoFocusKeyword') border-rose-500 ring-1 ring-rose-500 @else {{ $kwValid ? 'border-emerald-500/60 bg-emerald-500/[0.02] dark:border-emerald-500/40 text-slate-900 dark:text-slate-100' : 'border-slate-200 dark:border-slate-700' }} @enderror">
                 @error('seoFocusKeyword') <p class="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">{{ $message }}</p> @enderror
             </div>
 
             {{-- Meta title --}}
+            @php($mtLen = mb_strlen(trim($seoMetaTitle)))
+            @php($mtValid = $mtLen >= 3 && $mtLen <= 60)
             <div>
                 <div class="mb-1.5 flex items-center justify-between">
                     <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                        <i data-lucide="type" class="h-3.5 w-3.5 text-emerald-500"></i>
+                        <i data-lucide="type" class="h-3.5 w-3.5 {{ $mtValid ? 'text-emerald-500' : 'text-slate-400' }}"></i>
                         <span>Meta Title</span>
-                        <span class="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:bg-rose-500/20 dark:text-rose-300">Required</span>
+                        @if ($mtValid)
+                            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">
+                                <i data-lucide="check" class="h-3 w-3"></i> Completed
+                            </span>
+                        @else
+                            <span class="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:bg-rose-500/20 dark:text-rose-300">Required</span>
+                        @endif
                     </label>
-                    @php($mtLen = mb_strlen($seoMetaTitle))
                     <span class="font-mono text-xs {{ $mtLen === 0 || $mtLen > 60 ? 'text-rose-500 font-bold' : ($mtLen >= 50 && $mtLen <= 60 ? 'text-emerald-600 font-bold' : 'text-slate-500') }}">
                         {{ $mtLen }} / 60
                     </span>
@@ -165,19 +180,26 @@
                        wire:model.live.debounce.400ms="seoMetaTitle"
                        maxlength="60"
                        placeholder="Enter concise search engine title (Max 60 chars — Required)"
-                       class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-950 dark:focus:ring-emerald-500/20 @error('seoMetaTitle') border-rose-500 ring-1 ring-rose-500 @enderror">
+                       class="w-full rounded-xl border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:bg-slate-950 dark:focus:ring-emerald-500/20 @error('seoMetaTitle') border-rose-500 ring-1 ring-rose-500 @else {{ $mtValid ? 'border-emerald-500/60 bg-emerald-500/[0.02] dark:border-emerald-500/40 text-slate-900 dark:text-slate-100' : 'border-slate-200 dark:border-slate-700' }} @enderror">
                 @error('seoMetaTitle') <p class="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">{{ $message }}</p> @enderror
             </div>
 
             {{-- Meta description --}}
+            @php($mdLen = mb_strlen(trim($seoMetaDescription)))
+            @php($mdValid = $mdLen >= 10 && $mdLen <= 160)
             <div>
                 <div class="mb-1.5 flex items-center justify-between">
                     <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                        <i data-lucide="align-left" class="h-3.5 w-3.5 text-emerald-500"></i>
+                        <i data-lucide="align-left" class="h-3.5 w-3.5 {{ $mdValid ? 'text-emerald-500' : 'text-slate-400' }}"></i>
                         <span>Meta Description</span>
-                        <span class="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:bg-rose-500/20 dark:text-rose-300">Required</span>
+                        @if ($mdValid)
+                            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">
+                                <i data-lucide="check" class="h-3 w-3"></i> Completed
+                            </span>
+                        @else
+                            <span class="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:bg-rose-500/20 dark:text-rose-300">Required</span>
+                        @endif
                     </label>
-                    @php($mdLen = mb_strlen($seoMetaDescription))
                     <span class="font-mono text-xs {{ $mdLen === 0 || $mdLen > 160 ? 'text-rose-500 font-bold' : ($mdLen >= 120 && $mdLen <= 160 ? 'text-emerald-600 font-bold' : 'text-slate-500') }}">
                         {{ $mdLen }} / 160
                     </span>
@@ -186,11 +208,11 @@
                           rows="3"
                           maxlength="160"
                           placeholder="Compelling summary shown in Google search results (Max 160 chars — Required)"
-                          class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-950 dark:focus:ring-emerald-500/20 @error('seoMetaDescription') border-rose-500 ring-1 ring-rose-500 @enderror"></textarea>
+                          class="w-full rounded-xl border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:bg-slate-950 dark:focus:ring-emerald-500/20 @error('seoMetaDescription') border-rose-500 ring-1 ring-rose-500 @else {{ $mdValid ? 'border-emerald-500/60 bg-emerald-500/[0.02] dark:border-emerald-500/40 text-slate-900 dark:text-slate-100' : 'border-slate-200 dark:border-slate-700' }} @enderror"></textarea>
                 @error('seoMetaDescription') <p class="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Canonical + robots row --}}
+            {{-- Canonical + meta keywords row --}}
             <div class="grid gap-4 md:grid-cols-2">
                 <div>
                     <label class="mb-1.5 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -205,37 +227,6 @@
                 </div>
                 <div>
                     <label class="mb-1.5 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                        <i data-lucide="shield" class="h-3.5 w-3.5 text-slate-400"></i>
-                        Robots
-                    </label>
-                    <select wire:model="seoRobots"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-950">
-                        <option value="">Default (index, follow)</option>
-                        <option value="index,follow">index, follow</option>
-                        <option value="noindex,follow">noindex, follow</option>
-                        <option value="index,nofollow">index, nofollow</option>
-                        <option value="noindex,nofollow">noindex, nofollow</option>
-                    </select>
-                </div>
-            </div>
-
-            {{-- Schema type + meta keywords row --}}
-            <div class="grid gap-4 md:grid-cols-2">
-                <div>
-                    <label class="mb-1.5 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                        <i data-lucide="code-2" class="h-3.5 w-3.5 text-slate-400"></i>
-                        Schema.org Type
-                    </label>
-                    <select wire:model="seoSchemaType"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-950">
-                        <option value="">— auto (Article) —</option>
-                        @foreach ($this->schemaTypeOptions as $schemaType)
-                            <option value="{{ $schemaType }}">{{ $schemaType }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="mb-1.5 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
                         <i data-lucide="hash" class="h-3.5 w-3.5 text-slate-400"></i>
                         Meta Keywords
                     </label>
@@ -245,6 +236,44 @@
                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-950">
                 </div>
             </div>
+
+            {{-- Advanced Technical SEO: Robots & Schema Type (Admin / SEO Manager only) --}}
+            @if (auth()->user()?->can('seo.robots') || auth()->user()?->can('seo.schema'))
+                <div class="grid gap-4 md:grid-cols-2">
+                    @can('seo.robots')
+                        <div>
+                            <label class="mb-1.5 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                                <i data-lucide="shield" class="h-3.5 w-3.5 text-slate-400"></i>
+                                Robots
+                            </label>
+                            <select wire:model="seoRobots"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-950">
+                                <option value="">Default (index, follow)</option>
+                                <option value="index,follow">index, follow</option>
+                                <option value="noindex,follow">noindex, follow</option>
+                                <option value="index,nofollow">index, nofollow</option>
+                                <option value="noindex,nofollow">noindex, nofollow</option>
+                            </select>
+                        </div>
+                    @endcan
+
+                    @can('seo.schema')
+                        <div>
+                            <label class="mb-1.5 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                                <i data-lucide="code-2" class="h-3.5 w-3.5 text-slate-400"></i>
+                                Schema.org Type
+                            </label>
+                            <select wire:model="seoSchemaType"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-950">
+                                <option value="">— auto (Article) —</option>
+                                @foreach ($this->schemaTypeOptions as $schemaType)
+                                    <option value="{{ $schemaType }}">{{ $schemaType }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endcan
+                </div>
+            @endif
 
             {{-- Advanced: Social cards (collapsed by default) --}}
             <div class="rounded-xl border border-slate-200 dark:border-slate-800">
