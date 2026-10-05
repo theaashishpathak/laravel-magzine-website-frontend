@@ -168,3 +168,22 @@ test('ai.seo-generated does not overwrite manually set fields when payload omits
         ->assertSet('seoMetaTitle', 'Manually curated title')
         ->assertSet('seoMetaDescription', 'AI description only.');
 });
+
+test('robots and schema.org type fields are hidden for regular authors in SEO panel', function (): void {
+    $author = seoUser('Author');
+    $admin = seoUser('Admin');
+
+    // Author does NOT see Robots and Schema.org dropdowns
+    Livewire::actingAs($author)
+        ->test(Create::class)
+        ->assertDontSeeHtml('wire:model="seoRobots"')
+        ->assertDontSeeHtml('wire:model="seoSchemaType"')
+        ->assertSeeHtml('wire:model="seoCanonicalUrl"')
+        ->assertSeeHtml('wire:model="seoMetaKeywords"');
+
+    // Admin DOES see Robots and Schema.org dropdowns
+    Livewire::actingAs($admin)
+        ->test(Create::class)
+        ->assertSeeHtml('wire:model="seoRobots"')
+        ->assertSeeHtml('wire:model="seoSchemaType"');
+});

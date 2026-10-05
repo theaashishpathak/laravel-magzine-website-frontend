@@ -55,6 +55,16 @@ test('author only sees their own posts', function (): void {
         ->assertViewHas('posts', fn ($posts): bool => $posts->total() === 2);
 });
 
+test('author sees edit button for own pending review post', function (): void {
+    $author = postsIndexUser('Author');
+    $post = Post::factory()->pendingReview()->withAuthor($author->id)->create();
+
+    Livewire::actingAs($author)
+        ->test(Index::class)
+        ->assertOk()
+        ->assertSeeHtml(route('admin.posts.edit', $post));
+});
+
 test('type filter narrows the list', function (): void {
     $admin = postsIndexUser('Admin');
     Post::factory()->ofType(PostType::News)->create();
