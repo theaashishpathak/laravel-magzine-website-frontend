@@ -105,11 +105,11 @@ enum PostStatus: string
             self::PendingReview => [self::InReview, self::Approved, self::ChangesRequested, self::Rejected],
             self::InReview => [self::Approved, self::ChangesRequested, self::Rejected],
             self::ChangesRequested => [self::PendingReview, self::Draft],
-            self::Approved => [self::Scheduled, self::Published, self::ChangesRequested],
+            self::Approved => [self::Scheduled, self::Published, self::ChangesRequested, self::PendingReview],
             self::Scheduled => [self::Published, self::Approved],
             self::Published => [self::Unpublished, self::Archived],
             self::Unpublished => [self::Published, self::Archived],
-            self::Rejected => [self::Draft],
+            self::Rejected => [self::Draft, self::PendingReview],
             self::Archived => [],
         };
     }

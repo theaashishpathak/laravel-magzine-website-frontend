@@ -25,7 +25,7 @@ class SubmitForReviewAction
 {
     public function handle(Post $post, User $author, ?string $note = null): Post
     {
-        if (! $post->status->canTransitionTo(PostStatus::PendingReview)) {
+        if ($post->status !== PostStatus::PendingReview && ! $post->status->canTransitionTo(PostStatus::PendingReview)) {
             throw new InvalidArgumentException(
                 "Cannot submit a post in status [{$post->status->value}] for review."
             );

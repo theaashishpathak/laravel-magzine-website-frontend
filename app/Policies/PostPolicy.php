@@ -55,6 +55,8 @@ class PostPolicy
         if ($user->can('posts.edit_own') && $post->isOwnedBy($user)) {
             return in_array($post->status, [
                 PostStatus::Draft,
+                PostStatus::PendingReview,
+                PostStatus::Approved,
                 PostStatus::ChangesRequested,
                 PostStatus::Rejected,
             ], true);
@@ -129,7 +131,7 @@ class PostPolicy
     {
         return $post->isOwnedBy($user)
             && $user->can('posts.create')
-            && $post->status->canTransitionTo(PostStatus::PendingReview);
+            && ($post->status === PostStatus::PendingReview || $post->status->canTransitionTo(PostStatus::PendingReview));
     }
 
     public function approve(User $user, Post $post): bool

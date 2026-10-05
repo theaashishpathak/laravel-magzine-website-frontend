@@ -63,7 +63,7 @@ class UpdatePostAction
         unset($data['status']);
 
         $structural = Arr::only($data, [
-            'category_id', 'subcategory_id', 'default_language_id',
+            'author_id', 'category_id', 'subcategory_id', 'default_language_id',
             'visibility', 'is_featured', 'is_breaking', 'is_trending',
             'is_editors_pick', 'is_sponsored', 'is_premium', 'allow_comments',
             'scheduled_at', 'breaking_expires_at',
