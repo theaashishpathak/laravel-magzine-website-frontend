@@ -135,16 +135,54 @@
 
             @include('livewire.admin.posts._featured-image-card')
 
+            {{-- Unified Publishing & Editorial Workflow Panel --}}
             <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                <div class="border-b border-slate-100 bg-slate-50/60 px-5 py-3 dark:border-slate-800 dark:bg-slate-950/40">
+                <div class="flex items-center justify-between border-b border-slate-100 bg-slate-50/60 px-5 py-3 dark:border-slate-800 dark:bg-slate-950/40">
                     <h3 class="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
                         <i data-lucide="send-horizontal" class="h-3.5 w-3.5 text-indigo-500"></i>
-                        Actions
+                        Publish &amp; Workflow
                     </h3>
+                    <span class="rounded-full px-2.5 py-0.5 text-[11px] font-bold {{ $statusColor }}">
+                        {{ $status->label() }}
+                    </span>
                 </div>
-                <div class="space-y-2.5 p-4">
-                    @if ($this->canSubmitForReview)
-                        {{-- Submit for Review --}}
+
+                <div class="space-y-3.5 p-4">
+                    {{-- 1. Primary Publishing & Save Actions --}}
+                    @if ($post->status->value === 'published')
+                        {{-- Live post: Save Changes is the primary action --}}
+                        <button type="button" wire:click="save"
+                                wire:loading.attr="disabled"
+                                wire:target="save"
+                                class="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:from-indigo-700 hover:to-indigo-600 hover:shadow disabled:cursor-not-allowed disabled:opacity-60">
+                            <i data-lucide="save" class="h-4 w-4" wire:loading.remove wire:target="save"></i>
+                            <i data-lucide="loader-2" class="h-4 w-4 animate-spin" wire:loading wire:target="save"></i>
+                            <span wire:loading.remove wire:target="save">Save Changes</span>
+                            <span wire:loading wire:target="save">Saving…</span>
+                        </button>
+                    @elseif ($this->canPublish)
+                        {{-- Direct publish for Super Admin / Admin / Editor --}}
+                        <button type="button" wire:click="publish"
+                                wire:loading.attr="disabled"
+                                wire:target="publish"
+                                class="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:from-emerald-700 hover:to-emerald-600 hover:shadow disabled:cursor-not-allowed disabled:opacity-60">
+                            <i data-lucide="zap" class="h-4 w-4" wire:loading.remove wire:target="publish"></i>
+                            <i data-lucide="loader-2" class="h-4 w-4 animate-spin" wire:loading wire:target="publish"></i>
+                            <span wire:loading.remove wire:target="publish">{{ in_array($post->status->value, ['pending_review', 'in_review'], true) ? 'Approve & Publish' : 'Publish Now' }}</span>
+                            <span wire:loading wire:target="publish">Publishing…</span>
+                        </button>
+
+                        <button type="button" wire:click="save"
+                                wire:loading.attr="disabled"
+                                wire:target="save"
+                                class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60">
+                            <i data-lucide="save" class="h-3.5 w-3.5" wire:loading.remove wire:target="save"></i>
+                            <i data-lucide="loader-2" class="h-3.5 w-3.5 animate-spin" wire:loading wire:target="save"></i>
+                            <span wire:loading.remove wire:target="save">Save Changes</span>
+                            <span wire:loading wire:target="save">Saving…</span>
+                        </button>
+                    @elseif ($this->canSubmitForReview)
+                        {{-- Authors without direct publishing rights --}}
                         <button type="button" wire:click="submitForReview"
                                 wire:loading.attr="disabled"
                                 wire:target="submitForReview"
@@ -154,95 +192,98 @@
                             <span wire:loading.remove wire:target="submitForReview">Submit for Review</span>
                             <span wire:loading wire:target="submitForReview">Submitting…</span>
                         </button>
-                    @endif
 
-                    @if ($this->canPublish && $post->status->value !== 'published')
-                        {{-- Direct publish for Super Admin / Admin --}}
-                        <button type="button" wire:click="publish"
+                        <button type="button" wire:click="save"
                                 wire:loading.attr="disabled"
-                                wire:target="publish"
-                                class="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:from-emerald-700 hover:to-emerald-600 hover:shadow disabled:cursor-not-allowed disabled:opacity-60">
-                            <i data-lucide="zap" class="h-4 w-4" wire:loading.remove wire:target="publish"></i>
-                            <i data-lucide="loader-2" class="h-4 w-4 animate-spin" wire:loading wire:target="publish"></i>
-                            <span wire:loading.remove wire:target="publish">Publish Now</span>
-                            <span wire:loading wire:target="publish">Publishing…</span>
+                                wire:target="save"
+                                class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60">
+                            <i data-lucide="save" class="h-3.5 w-3.5" wire:loading.remove wire:target="save"></i>
+                            <i data-lucide="loader-2" class="h-3.5 w-3.5 animate-spin" wire:loading wire:target="save"></i>
+                            <span wire:loading.remove wire:target="save">Save Draft</span>
+                            <span wire:loading wire:target="save">Saving…</span>
+                        </button>
+                    @else
+                        {{-- Standard fallback save --}}
+                        <button type="button" wire:click="save"
+                                wire:loading.attr="disabled"
+                                wire:target="save"
+                                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60">
+                            <i data-lucide="save" class="h-4 w-4" wire:loading.remove wire:target="save"></i>
+                            <i data-lucide="loader-2" class="h-4 w-4 animate-spin" wire:loading wire:target="save"></i>
+                            <span wire:loading.remove wire:target="save">Save Changes</span>
+                            <span wire:loading wire:target="save">Saving…</span>
                         </button>
                     @endif
 
-                    {{-- Save Changes button --}}
-                    <button type="button" wire:click="save"
-                            wire:loading.attr="disabled"
-                            wire:target="save"
-                            class="inline-flex w-full items-center justify-center gap-2 rounded-xl {{ $this->canSubmitForReview || ($this->canPublish && $post->status->value !== 'published') ? 'border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100' : 'bg-gradient-to-r from-indigo-600 to-indigo-500 px-4 py-3 text-sm font-bold text-white shadow-sm hover:from-indigo-700 hover:to-indigo-600' }} transition disabled:cursor-not-allowed disabled:opacity-60">
-                        <i data-lucide="save" class="h-3.5 w-3.5" wire:loading.remove wire:target="save"></i>
-                        <i data-lucide="loader-2" class="h-3.5 w-3.5 animate-spin" wire:loading wire:target="save"></i>
-                        <span wire:loading.remove wire:target="save">Save Changes</span>
-                        <span wire:loading wire:target="save">Saving…</span>
-                    </button>
-                </div>
-            </div>
+                    {{-- 2. Editorial Review Decisions (Only shown during active review flow to authorized reviewers) --}}
+                    @if (in_array($post->status->value, ['pending_review', 'in_review', 'changes_requested'], true) && ($this->canApprove || $this->canReject || $this->canRequestChanges))
+                        <div class="space-y-3 rounded-xl border border-amber-200/70 bg-amber-50/50 p-3.5 dark:border-amber-500/20 dark:bg-amber-500/5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300">
+                                    Editorial Review
+                                </span>
+                                <span class="text-[10px] text-amber-600 dark:text-amber-400">Reviewer options</span>
+                            </div>
 
-            {{-- Editorial workflow buttons --}}
-            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Editorial Workflow</h3>
+                            <textarea
+                                wire:model="editorialNote"
+                                rows="2"
+                                placeholder="Feedback / note for author (required for reject & request changes)…"
+                                class="w-full rounded-lg border border-amber-200 bg-white px-3 py-2 text-xs outline-none focus:border-amber-400 dark:border-amber-500/30 dark:bg-slate-950 dark:text-slate-100"
+                            ></textarea>
 
-                @if ($this->canApprove || $this->canReject || $this->canRequestChanges)
-                    <textarea
-                        wire:model="editorialNote"
-                        rows="3"
-                        placeholder="Note (required for reject + request changes)…"
-                        class="mb-3 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-950"
-                    ></textarea>
-                @endif
+                            <div class="grid grid-cols-2 gap-2">
+                                @if ($this->canApprove && $post->status->value !== 'approved')
+                                    <button type="button" wire:click="approve"
+                                            wire:loading.attr="disabled" wire:target="approve"
+                                            class="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-500/30 dark:bg-indigo-950/40 dark:text-indigo-300 cursor-pointer">
+                                        <i data-lucide="check" class="h-3.5 w-3.5"></i>
+                                        Approve (Mark Approved)
+                                    </button>
+                                @endif
 
-                <div class="space-y-2">
+                                @if ($this->canRequestChanges)
+                                    <button type="button" wire:click="requestChanges"
+                                            wire:loading.attr="disabled" wire:target="requestChanges"
+                                            class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-orange-200 bg-orange-50 px-2.5 py-2 text-xs font-semibold text-orange-700 hover:bg-orange-100 dark:border-orange-500/30 dark:bg-orange-950/40 dark:text-orange-300 cursor-pointer">
+                                        <i data-lucide="message-square" class="h-3.5 w-3.5"></i>
+                                        Request Changes
+                                    </button>
+                                @endif
 
-                    @if ($this->canApprove)
-                        <button type="button" wire:click="approve"
-                                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700">
-                            <i data-lucide="check" class="h-3.5 w-3.5"></i>
-                            Approve
-                        </button>
+                                @if ($this->canReject)
+                                    <button type="button" wire:click="reject"
+                                            wire:loading.attr="disabled" wire:target="reject"
+                                            class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-100 dark:border-rose-500/30 dark:bg-rose-950/40 dark:text-rose-300 cursor-pointer">
+                                        <i data-lucide="x-circle" class="h-3.5 w-3.5"></i>
+                                        Reject
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
                     @endif
 
-                    @if ($this->canRequestChanges)
-                        <button type="button" wire:click="requestChanges"
-                                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-3 py-2 text-xs font-semibold text-white hover:bg-orange-600">
-                            <i data-lucide="message-square" class="h-3.5 w-3.5"></i>
-                            Request Changes
-                        </button>
-                    @endif
+                    {{-- 3. Post Management & Lifecycle (Unpublish / Archive) --}}
+                    @if (($this->canPublish && $post->status->value === 'published') || ($this->canArchive && $post->status->value !== 'archived'))
+                        <div class="flex items-center gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
+                            @if ($this->canPublish && $post->status->value === 'published')
+                                <button type="button" wire:click="unpublish"
+                                        wire:loading.attr="disabled" wire:target="unpublish"
+                                        class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer">
+                                    <i data-lucide="eye-off" class="h-3.5 w-3.5"></i>
+                                    Unpublish
+                                </button>
+                            @endif
 
-                    @if ($this->canReject)
-                        <button type="button" wire:click="reject"
-                                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white hover:bg-rose-700">
-                            <i data-lucide="x-circle" class="h-3.5 w-3.5"></i>
-                            Reject
-                        </button>
-                    @endif
-
-                    @if ($this->canPublish)
-                        @if ($post->status->value !== 'published')
-                            <button type="button" wire:click="publish"
-                                    class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700">
-                                <i data-lucide="zap" class="h-3.5 w-3.5"></i>
-                                Publish
-                            </button>
-                        @else
-                            <button type="button" wire:click="unpublish"
-                                    class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-stone-500 px-3 py-2 text-xs font-semibold text-white hover:bg-stone-600">
-                                <i data-lucide="eye-off" class="h-3.5 w-3.5"></i>
-                                Unpublish
-                            </button>
-                        @endif
-                    @endif
-
-                    @if ($this->canArchive && $post->status->value !== 'archived')
-                        <button type="button" wire:click="archive"
-                                class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-300 bg-zinc-50 px-3 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                            <i data-lucide="archive" class="h-3.5 w-3.5"></i>
-                            Archive
-                        </button>
+                            @if ($this->canArchive && $post->status->value !== 'archived')
+                                <button type="button" wire:click="archive"
+                                        wire:loading.attr="disabled" wire:target="archive"
+                                        class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-rose-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer">
+                                    <i data-lucide="archive" class="h-3.5 w-3.5"></i>
+                                    Archive
+                                </button>
+                            @endif
+                        </div>
                     @endif
                 </div>
             </div>

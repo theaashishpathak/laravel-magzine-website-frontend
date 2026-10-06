@@ -15,7 +15,7 @@
         autocomplete="{{ $autocomplete }}"
         @if($required) required @endif
         style="padding-right: 2.5rem;"
-        {{ $attributes->merge(['class' => 'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-950']) }}
+        {{ $attributes->merge(['class' => 'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-950 [&::-ms-reveal]:hidden [&::-ms-clear]:hidden']) }}
     >
     <button type="button"
             data-password-toggle

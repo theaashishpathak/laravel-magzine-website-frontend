@@ -131,7 +131,7 @@
                                     <input type="password" name="values[{{ $field['state_key'] }}]"
                                         wire:model.live="values.{{ $field['state_key'] }}" autocomplete="new-password"
                                         spellcheck="false" data-password-field
-                                        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-12 text-sm font-mono outline-none transition focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-950">
+                                        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-12 text-sm font-mono outline-none transition focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-950 [&::-ms-reveal]:hidden [&::-ms-clear]:hidden">
                                     <button type="button"
                                         data-password-toggle
                                         tabindex="-1"
