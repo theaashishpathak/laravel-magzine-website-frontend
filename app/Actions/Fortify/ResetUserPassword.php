@@ -28,5 +28,12 @@ class ResetUserPassword implements ResetsUserPasswords
         $user->forceFill([
             'password' => Hash::make($input['password']),
         ])->save();
+
+        $user->notify(new \App\Notifications\Auth\PasswordChangedNotification());
+
+        $admins = \App\Support\AdminNotificationRecipient::allActiveAdmins($user->id);
+        if ($admins->isNotEmpty()) {
+            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\Admin\AdminPasswordChangedNotification($user));
+        }
     }
 }

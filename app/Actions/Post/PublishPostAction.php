@@ -84,6 +84,12 @@ class PublishPostAction
                         }
                     });
             }
+
+            // Alert Super Admin and Admin recipients
+            $admins = \App\Support\AdminNotificationRecipient::allActiveAdmins();
+            if ($admins->isNotEmpty()) {
+                Notification::send($admins, new \App\Notifications\Admin\AdminPostPublishedNotification($fresh, $publisher));
+            }
         }
 
         return $fresh;

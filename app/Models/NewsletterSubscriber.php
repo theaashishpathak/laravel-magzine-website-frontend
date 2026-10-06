@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Concerns\HasContextualActivityLog;
 use Database\Factories\NewsletterSubscriberFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\LogOptions;
 
 /**
  * Newsletter subscriber — captured via the public signup widget.
@@ -23,7 +25,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class NewsletterSubscriber extends Model
 {
     /** @use HasFactory<NewsletterSubscriberFactory> */
-    use HasFactory;
+    use HasContextualActivityLog, HasFactory;
+
+    public function activityLogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['email', 'status'])
+            ->logOnlyDirty()
+            ->useLogName('newsletter')
+            ->setDescriptionForEvent(fn (string $event): string => "Subscriber {$event}")
+            ->dontSubmitEmptyLogs();
+    }
 
     public const STATUS_PENDING = 'pending';
 

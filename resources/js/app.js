@@ -697,6 +697,29 @@ const initButtons = () => {
 			return;
 		}
 
+		const passwordToggle = target.closest('[data-password-toggle]');
+		if (passwordToggle) {
+			event.preventDefault();
+			const container = passwordToggle.closest('.relative') || passwordToggle.parentElement;
+			const input = container ? container.querySelector('input') : null;
+			if (input) {
+				const isPassword = input.type === 'password';
+				input.type = isPassword ? 'text' : 'password';
+
+				const eyeOpen = passwordToggle.querySelector('.eye-open-icon');
+				const eyeClosed = passwordToggle.querySelector('.eye-closed-icon');
+				if (eyeOpen && eyeClosed) {
+					eyeOpen.classList.toggle('hidden', isPassword);
+					eyeClosed.classList.toggle('hidden', !isPassword);
+				}
+
+				const newLabel = isPassword ? 'Hide password' : 'Show password';
+				passwordToggle.setAttribute('aria-label', newLabel);
+				passwordToggle.setAttribute('title', newLabel);
+			}
+			return;
+		}
+
 		if (!target.closest('[data-dropdown-toggle]') && !target.closest('[data-dropdown]')) {
 			closeAllDropdowns();
 		}

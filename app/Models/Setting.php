@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Concerns\HasContextualActivityLog;
 use Database\Factories\SettingFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Crypt;
+use Spatie\Activitylog\LogOptions;
 
 class Setting extends Model
 {
@@ -23,11 +25,6 @@ class Setting extends Model
 
     public const TYPE_JSON = 'json';
 
-    /**
-     * Encrypted at-rest string (e.g. API keys). Stored as
-     * json_encode(Crypt::encryptString($plain)) so the column is still
-     * a JSON-valid string but unreadable without the app key.
-     */
     public const TYPE_ENCRYPTED = 'encrypted';
 
     /** @var list<string> */
@@ -41,8 +38,17 @@ class Setting extends Model
         self::TYPE_ENCRYPTED,
     ];
 
-    /** @use HasFactory<SettingFactory> */
-    use HasFactory;
+    use HasContextualActivityLog, HasFactory;
+
+    public function activityLogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['group', 'key', 'value', 'type'])
+            ->logOnlyDirty()
+            ->useLogName('settings')
+            ->setDescriptionForEvent(fn (string $event): string => "Setting {$event}")
+            ->dontSubmitEmptyLogs();
+    }
 
     /** @var list<string> */
     protected $fillable = [

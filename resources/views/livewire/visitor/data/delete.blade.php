@@ -99,8 +99,8 @@
                     </div>
                     <div>
                         <label class="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-200">Current password</label>
-                        <input type="password" wire:model="password" autocomplete="current-password"
-                               class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-rose-400 focus:ring-1 focus:ring-rose-400 dark:border-slate-700 dark:bg-slate-950">
+                        <x-password-input wire:model="password" autocomplete="current-password"
+                               class="rounded-lg px-3 py-2 focus:border-rose-400 focus:ring-1 focus:ring-rose-400" />
                         @error('password') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                     </div>
                 </div>

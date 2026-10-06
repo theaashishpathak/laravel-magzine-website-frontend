@@ -44,6 +44,21 @@ class ActivityLogIndex extends Component
         $this->resetPage();
     }
 
+    public function setDatePreset(string $preset): void
+    {
+        $today = now()->toDateString();
+        match ($preset) {
+            'today' => [$this->from = $today, $this->to = $today],
+            'yesterday' => [$this->from = now()->subDay()->toDateString(), $this->to = now()->subDay()->toDateString()],
+            '7days' => [$this->from = now()->subDays(6)->toDateString(), $this->to = $today],
+            '30days' => [$this->from = now()->subDays(29)->toDateString(), $this->to = $today],
+            'this_month' => [$this->from = now()->startOfMonth()->toDateString(), $this->to = now()->endOfMonth()->toDateString()],
+            'clear' => [$this->from = '', $this->to = ''],
+            default => null,
+        };
+        $this->resetPage();
+    }
+
     public function updated(): void
     {
         $this->resetPage();

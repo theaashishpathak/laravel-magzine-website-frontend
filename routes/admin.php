@@ -43,6 +43,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->group(function (): voi
             ->middleware('permission:logs.login.view')->name('login.index');
         Route::get('/activity', \App\Livewire\Admin\Logs\ActivityLogIndex::class)
             ->middleware('permission:logs.activity.view')->name('activity.index');
+        Route::get('/email', \App\Livewire\Admin\Logs\EmailLogIndex::class)
+            ->middleware('permission:logs.email.view')->name('email.index');
     });
 
     Route::get('/clear-all-cache', function () {

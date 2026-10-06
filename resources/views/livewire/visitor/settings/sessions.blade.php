@@ -65,8 +65,8 @@
         <form wire:submit="logoutOthers" class="flex flex-wrap items-end gap-3">
             <div class="min-w-[240px] flex-1">
                 <label class="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-200">Confirm password</label>
-                <input type="password" wire:model="password" autocomplete="current-password"
-                       class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-950">
+                <x-password-input wire:model="password" autocomplete="current-password"
+                       class="rounded-lg px-3 py-2 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
                 @error('password') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
             </div>
             <button type="submit"

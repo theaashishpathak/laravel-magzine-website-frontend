@@ -122,7 +122,7 @@ class PermissionSeeder extends Seeder
             'settings.view', 'settings.update',
 
             // logs
-            'logs.login.view', 'logs.activity.view',
+            'logs.login.view', 'logs.activity.view', 'logs.email.view',
 
             // staff / departments (HR optional, but admin can manage authors)
             'staff.view', 'staff.create', 'staff.edit', 'staff.deactivate', 'staff.assign_role',

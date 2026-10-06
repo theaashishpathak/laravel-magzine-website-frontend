@@ -58,6 +58,7 @@ return [
     'logs' => [
         'logs.login.view',
         'logs.activity.view',
+        'logs.email.view',
     ],
 
     // -------------------------------------------------------------------------

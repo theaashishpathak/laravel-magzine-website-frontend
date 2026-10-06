@@ -47,6 +47,13 @@ class CreateNewUser implements CreatesNewUsers
 
             $user->assignRole('Author');
 
+            $user->notify(new \App\Notifications\Auth\WelcomeUserNotification());
+
+            $admins = \App\Support\AdminNotificationRecipient::allActiveAdmins($user->id);
+            if ($admins->isNotEmpty()) {
+                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\Admin\AdminNewUserNotification($user));
+            }
+
             return $user;
         });
     }

@@ -56,14 +56,11 @@
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium">Password</label>
-                    <input type="password" name="password" id="register-password" required autocomplete="new-password"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-950">
+                    <x-password-input name="password" id="register-password" required autocomplete="new-password" />
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium">Confirm Password</label>
-                    <input type="password" name="password_confirmation" id="register-password-confirmation" required
-                        autocomplete="new-password"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-950">
+                    <x-password-input name="password_confirmation" id="register-password-confirmation" required autocomplete="new-password" />
                 </div>
 
                 <button type="submit"

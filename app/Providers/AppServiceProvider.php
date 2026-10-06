@@ -50,6 +50,11 @@ class AppServiceProvider extends ServiceProvider
         // Backfill published_at + stamp updated_by + invalidate caches
         // around Post lifecycle changes. See App\Observers\PostObserver.
         Post::observe(PostObserver::class);
+
+        // Email delivery audit logs
+        Event::listen(\Illuminate\Mail\Events\MessageSending::class, [\App\Listeners\LogOutgoingEmail::class, 'handleSending']);
+        Event::listen(\Illuminate\Mail\Events\MessageSent::class, [\App\Listeners\LogOutgoingEmail::class, 'handleSent']);
+        Event::listen(\Illuminate\Queue\Events\JobFailed::class, [\App\Listeners\LogFailedEmailJob::class, 'handle']);
     }
 
     /**

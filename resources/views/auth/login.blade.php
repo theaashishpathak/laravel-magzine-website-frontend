@@ -45,7 +45,7 @@
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium">Password</label>
-                    <input type="password" name="password" id="login-password" required autocomplete="current-password" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-950">
+                    <x-password-input name="password" id="login-password" required autocomplete="current-password" />
                 </div>
 
                 <div class="flex items-center justify-between text-sm">

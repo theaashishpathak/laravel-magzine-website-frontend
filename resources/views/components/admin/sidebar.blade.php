@@ -415,10 +415,47 @@
                 </div>
             @endcanany
 
+            {{-- Logs (Dedicated Top-Level Section) --}}
+            @canany(['logs.activity.view', 'logs.email.view', 'logs.login.view'])
+                @php($logsMenuActive = request()->routeIs('admin.logs.*'))
+                <div>
+                    <button type="button"
+                        class="{{ $dropdownParentClass }} {{ $logsMenuActive ? $menuActiveClass : $menuInactiveClass }}"
+                        data-sidebar-menu-toggle="logs-sidebar-menu" aria-controls="logs-sidebar-menu">
+                        <span class="{{ $menuContentClass }}">
+                            <i data-lucide="history" class="h-4 w-4 shrink-0 text-sky-400"></i>
+                            <span data-sidebar-label class="truncate">Logs</span>
+                        </span>
+                        <i data-lucide="chevron-down" class="{{ $menuChevronClass }}" data-sidebar-label></i>
+                    </button>
+
+                    <div data-sidebar-submenu="logs-sidebar-menu"
+                        class="{{ $subMenuWrapper }} {{ $logsMenuActive ? '' : 'hidden' }}">
+                        @can('logs.activity.view')
+                            <a href="{{ route('admin.logs.activity.index') }}" wire:navigate
+                                class="{{ $childMenuBaseClass }} {{ request()->routeIs('admin.logs.activity.*') ? $childMenuActiveClass : $childMenuInactiveClass }}">
+                                <span data-sidebar-label>Activity Logs</span>
+                            </a>
+                        @endcan
+                        @can('logs.email.view')
+                            <a href="{{ route('admin.logs.email.index') }}" wire:navigate
+                                class="{{ $childMenuBaseClass }} {{ request()->routeIs('admin.logs.email.*') ? $childMenuActiveClass : $childMenuInactiveClass }}">
+                                <span data-sidebar-label>Email Delivery Logs</span>
+                            </a>
+                        @endcan
+                        @can('logs.login.view')
+                            <a href="{{ route('admin.logs.login.index') }}" wire:navigate
+                                class="{{ $childMenuBaseClass }} {{ request()->routeIs('admin.logs.login.*') ? $childMenuActiveClass : $childMenuInactiveClass }}">
+                                <span data-sidebar-label>Login Logs</span>
+                            </a>
+                        @endcan
+                    </div>
+                </div>
+            @endcanany
+
             {{-- Settings --}}
-            @canany(['settings.view', 'settings.update', 'settings.roles', 'settings.permissions', 'logs.login.view',
-                'logs.activity.view'])
-                @php($settingsMenuActive = request()->routeIs('settings') || request()->routeIs('settings.*') || request()->routeIs('admin.settings.*') || request()->routeIs('admin.permission-groups.index') || request()->routeIs('admin.permissions.index') || request()->routeIs('admin.roles.index') || request()->routeIs('admin.roles.create') || request()->routeIs('admin.roles.edit') || request()->routeIs('admin.assign-role.index') || request()->routeIs('admin.assign-user-permissions.index') || request()->routeIs('admin.assign-user-permissions.edit') || request()->routeIs('admin.logs.*'))
+            @canany(['settings.view', 'settings.update', 'settings.roles', 'settings.permissions'])
+                @php($settingsMenuActive = request()->routeIs('settings') || request()->routeIs('settings.*') || request()->routeIs('admin.settings.*') || request()->routeIs('admin.permission-groups.index') || request()->routeIs('admin.permissions.index') || request()->routeIs('admin.roles.index') || request()->routeIs('admin.roles.create') || request()->routeIs('admin.roles.edit') || request()->routeIs('admin.assign-role.index') || request()->routeIs('admin.assign-user-permissions.index') || request()->routeIs('admin.assign-user-permissions.edit'))
                 <div>
                     <button type="button"
                         class="{{ $dropdownParentClass }} {{ $settingsMenuActive ? $menuActiveClass : $menuInactiveClass }}"
@@ -465,24 +502,6 @@
                                 <a href="{{ route('admin.assign-role.index') }}"
                                     class="{{ $childMenuBaseClass }} {{ request()->routeIs('admin.assign-role.index') ? $childMenuActiveClass : $childMenuInactiveClass }}">
                                     <span data-sidebar-label>Assign Roles</span>
-                                </a>
-                            @endcan
-                        @endcanany
-                        @canany(['logs.login.view', 'logs.activity.view'])
-                            <div data-sidebar-label
-                                class="px-3 pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-                                Audit Logs
-                            </div>
-                            @can('logs.login.view')
-                                <a href="{{ route('admin.logs.login.index') }}" wire:navigate
-                                    class="{{ $childMenuBaseClass }} {{ request()->routeIs('admin.logs.login.*') ? $childMenuActiveClass : $childMenuInactiveClass }}">
-                                    <span data-sidebar-label>Login Logs</span>
-                                </a>
-                            @endcan
-                            @can('logs.activity.view')
-                                <a href="{{ route('admin.logs.activity.index') }}" wire:navigate
-                                    class="{{ $childMenuBaseClass }} {{ request()->routeIs('admin.logs.activity.*') ? $childMenuActiveClass : $childMenuInactiveClass }}">
-                                    <span data-sidebar-label>Activity Logs</span>
                                 </a>
                             @endcan
                         @endcanany

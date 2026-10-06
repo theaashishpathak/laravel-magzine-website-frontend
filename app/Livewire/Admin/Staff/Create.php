@@ -108,9 +108,17 @@ class Create extends Component
                 $user->syncRoles($this->selectedRoles);
             }
 
-            // TODO: implement actual invite email when SMTP is configured.
+            if ($this->sendInvite) {
+                $user->notify(new \App\Notifications\Auth\StaffInviteNotification($validated['temporaryPassword'] ?? $this->temporaryPassword));
+            }
+
+            $admins = \App\Support\AdminNotificationRecipient::allActiveAdmins(auth()->id());
+            if ($admins->isNotEmpty()) {
+                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\Admin\AdminNewUserNotification($user));
+            }
+
             $message = $this->sendInvite
-                ? 'Staff member created. Send the invite email manually with their temporary password until SMTP is wired up.'
+                ? 'Staff member created and invitation email dispatched.'
                 : 'Staff member created successfully.';
 
             session()->flash('success', $message);

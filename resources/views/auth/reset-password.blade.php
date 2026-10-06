@@ -20,7 +20,7 @@
 
             <div>
                 <label class="mb-2 block text-sm font-medium">Password</label>
-                <input type="password" name="password" required autocomplete="new-password" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-950">
+                <x-password-input name="password" required autocomplete="new-password" />
                 @error('password')
                     <p class="mt-2 text-xs text-rose-600">{{ $message }}</p>
                 @enderror
@@ -28,7 +28,7 @@
 
             <div>
                 <label class="mb-2 block text-sm font-medium">Confirm Password</label>
-                <input type="password" name="password_confirmation" required autocomplete="new-password" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-950">
+                <x-password-input name="password_confirmation" required autocomplete="new-password" />
             </div>
 
             <button type="submit" class="w-full rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700">Reset Password</button>

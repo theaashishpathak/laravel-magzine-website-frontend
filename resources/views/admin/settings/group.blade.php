@@ -133,10 +133,21 @@
                                         spellcheck="false" data-password-field
                                         class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-12 text-sm font-mono outline-none transition focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-950">
                                     <button type="button"
-                                        onclick="(function(btn){var i=btn.previousElementSibling;i.type=i.type==='password'?'text':'password';})(this)"
-                                        class="absolute inset-y-0 right-2 my-1 inline-flex items-center justify-center rounded-lg px-2 text-slate-500 transition hover:text-indigo-600 dark:hover:text-indigo-300"
-                                        aria-label="Toggle visibility">
-                                        <i data-lucide="eye" class="h-4 w-4"></i>
+                                        data-password-toggle
+                                        tabindex="-1"
+                                        class="absolute inset-y-0 right-2 my-1 inline-flex items-center justify-center rounded-lg px-2 text-slate-500 transition hover:text-indigo-600 dark:hover:text-indigo-300 cursor-pointer"
+                                        aria-label="Show password"
+                                        title="Show password">
+                                        <svg class="eye-open-icon h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                        <svg class="eye-closed-icon hidden h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
+                                            <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
+                                            <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
+                                            <path d="m2 2 20 20"/>
+                                        </svg>
                                     </button>
                                 </div>
                                 <p class="text-[11px] text-slate-500 dark:text-slate-400">Stored encrypted at rest. Leave

@@ -76,8 +76,8 @@
                 @if ($email !== $user->email)
                     <div>
                         <label class="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-200">Current password</label>
-                        <input type="password" wire:model="currentPassword"
-                               class="w-full rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-amber-500/40 dark:bg-amber-500/10">
+                        <x-password-input wire:model="currentPassword" autocomplete="current-password"
+                               class="rounded-lg border-amber-300 bg-amber-50 px-3 py-2 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-amber-500/40 dark:bg-amber-500/10" />
                         @error('currentPassword') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                     </div>
                 @endif

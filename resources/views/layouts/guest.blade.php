@@ -35,6 +35,7 @@
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @livewireStyles
     </head>
     <body class="bg-slate-100 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
         {{-- Top bar — gives guest auth pages (login / forgot / reset)
@@ -67,6 +68,7 @@
                 if (window.lucide) window.lucide.createIcons();
             })();
         </script>
+        @livewireScripts
         @stack('scripts')
     </body>
 </html>

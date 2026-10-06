@@ -15,45 +15,104 @@
 
     <x-admin.section title="Filters" description="Narrow the audit trail by date, user, model, event, or channel." class="mb-6">
         <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-7">
-            <input wire:model.live="from" type="date"
-                   class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950">
-            <input wire:model.live="to" type="date"
-                   class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950">
+            {{-- From Date --}}
+            <div>
+                <label class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                    <i data-lucide="calendar" class="h-3.5 w-3.5 text-indigo-500"></i>
+                    <span>From Date</span>
+                </label>
+                <div class="relative">
+                    <input wire:model.live="from" type="date"
+                           onclick="this.showPicker && this.showPicker()"
+                           title="Select starting date"
+                           class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 cursor-pointer">
+                </div>
+            </div>
 
-            <select wire:model.live="userId"
-                    class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950">
-                <option value="">All users</option>
-                @foreach ($users as $u)
-                    <option value="{{ $u->id }}">{{ $u->name }}</option>
-                @endforeach
-            </select>
+            {{-- To Date --}}
+            <div>
+                <label class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                    <i data-lucide="calendar" class="h-3.5 w-3.5 text-indigo-500"></i>
+                    <span>To Date</span>
+                </label>
+                <div class="relative">
+                    <input wire:model.live="to" type="date"
+                           onclick="this.showPicker && this.showPicker()"
+                           title="Select ending date"
+                           class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 cursor-pointer">
+                </div>
+            </div>
 
-            <select wire:model.live="model"
-                    class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950">
-                <option value="">All models</option>
-                @foreach ($models as $modelClass)
-                    <option value="{{ $modelClass }}">{{ class_basename($modelClass) }}</option>
-                @endforeach
-            </select>
+            {{-- User --}}
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold text-slate-700 dark:text-slate-200">User</label>
+                <select wire:model.live="userId"
+                        class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950">
+                    <option value="">All users</option>
+                    @foreach ($users as $u)
+                        <option value="{{ $u->id }}">{{ $u->name }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-            <select wire:model.live="event"
-                    class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950">
-                <option value="">All events</option>
-                @foreach ($events as $e)
-                    <option value="{{ $e }}">{{ ucfirst($e) }}</option>
-                @endforeach
-            </select>
+            {{-- Model --}}
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold text-slate-700 dark:text-slate-200">Model</label>
+                <select wire:model.live="model"
+                        class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950">
+                    <option value="">All models</option>
+                    @foreach ($models as $modelClass)
+                        <option value="{{ $modelClass }}">{{ class_basename($modelClass) }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-            <select wire:model.live="logName"
-                    class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950">
-                <option value="">All channels</option>
-                @foreach ($channels as $ch)
-                    <option value="{{ $ch }}">{{ ucfirst($ch) }}</option>
-                @endforeach
-            </select>
+            {{-- Event --}}
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold text-slate-700 dark:text-slate-200">Event</label>
+                <select wire:model.live="event"
+                        class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950">
+                    <option value="">All events</option>
+                    @foreach ($events as $e)
+                        <option value="{{ $e }}">{{ ucfirst($e) }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-            <input wire:model.live.debounce.400ms="search" type="text" placeholder="Search description / properties"
-                   class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950">
+            {{-- Channel --}}
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold text-slate-700 dark:text-slate-200">Channel</label>
+                <select wire:model.live="logName"
+                        class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950">
+                    <option value="">All channels</option>
+                    @foreach ($channels as $ch)
+                        <option value="{{ $ch }}">{{ ucfirst($ch) }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Search --}}
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold text-slate-700 dark:text-slate-200">Search</label>
+                <input wire:model.live.debounce.400ms="search" type="text" placeholder="Description / properties..."
+                       class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 dark:border-slate-700 dark:bg-slate-950">
+            </div>
+        </div>
+
+        {{-- Quick Date Range Presets --}}
+        <div class="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 dark:border-slate-800 text-xs">
+            <span class="font-medium text-slate-400 mr-1">Quick date range:</span>
+            <button type="button" wire:click="setDatePreset('today')" class="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-indigo-500/40 dark:hover:text-indigo-300 transition cursor-pointer">Today</button>
+            <button type="button" wire:click="setDatePreset('yesterday')" class="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-indigo-500/40 dark:hover:text-indigo-300 transition cursor-pointer">Yesterday</button>
+            <button type="button" wire:click="setDatePreset('7days')" class="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-indigo-500/40 dark:hover:text-indigo-300 transition cursor-pointer">Last 7 Days</button>
+            <button type="button" wire:click="setDatePreset('30days')" class="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-indigo-500/40 dark:hover:text-indigo-300 transition cursor-pointer">Last 30 Days</button>
+            <button type="button" wire:click="setDatePreset('this_month')" class="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-indigo-500/40 dark:hover:text-indigo-300 transition cursor-pointer">This Month</button>
+            @if ($from || $to)
+                <button type="button" wire:click="setDatePreset('clear')" class="ml-auto inline-flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 font-semibold text-rose-600 hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-400 transition cursor-pointer">
+                    <i data-lucide="x" class="h-3 w-3"></i>
+                    <span>Clear dates</span>
+                </button>
+            @endif
         </div>
     </x-admin.section>
 
@@ -62,16 +121,15 @@
             <thead class="bg-slate-50 text-left text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:bg-slate-950/50 dark:text-slate-300">
                 <tr>
                     <th class="px-4 py-3">SL</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Action</th>
                     <th class="px-4 py-3">User</th>
-                    <th class="px-4 py-3">Event</th>
-                    <th class="px-4 py-3">Subject</th>
+                    <th class="px-4 py-3">Affected Item</th>
                     <th class="px-4 py-3">Channel</th>
                     <th class="px-4 py-3">Changed</th>
-                    <th class="px-4 py-3">IP</th>
-                    <th class="px-4 py-3">Location</th>
-                    <th class="px-4 py-3">Browser</th>
-                    <th class="px-4 py-3">Date</th>
-                    <th class="px-4 py-3 text-right">Diff</th>
+                    <th class="px-4 py-3">IP & Location</th>
+                    <th class="px-4 py-3">Timestamp</th>
+                    <th class="px-4 py-3 text-right">Details / Diff</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -113,15 +171,32 @@
                         $causerName = $log->causer?->name ?? 'System';
                         $causerEmail = $log->causer?->email;
 
+                        $subjectTitle = null;
+                        if ($log->subject) {
+                            $subjectTitle = $log->subject->title ?? $log->subject->name ?? (method_exists($log->subject, 'translation') ? $log->subject->translation()?->title : null);
+                        }
+
                         $subjectLabel = $log->subject_type
                             ? class_basename($log->subject_type).($log->subject_id ? ' #'.$log->subject_id : '')
                             : '—';
+
+                        $logStatus = $props->get('status') ?? 'Success';
                     @endphp
                     <tr wire:key="activity-log-{{ $log->id }}" class="align-top transition hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
                         <td class="px-4 py-3 text-slate-400">{{ $logs->firstItem() + $i }}</td>
                         <td class="px-4 py-3">
-                            <div class="font-semibold text-slate-900 dark:text-slate-100">{{ $causerName }}</div>
-                            <div class="text-xs text-slate-500">{{ $causerEmail }}</div>
+                            <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold {{ match(strtolower((string) $logStatus)) {
+                                'failed', 'error' => 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300',
+                                'warning' => 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300',
+                                default => 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+                            } }}">
+                                <span class="h-1.5 w-1.5 rounded-full {{ match(strtolower((string) $logStatus)) {
+                                    'failed', 'error' => 'bg-rose-500',
+                                    'warning' => 'bg-amber-500',
+                                    default => 'bg-emerald-500'
+                                } }}"></span>
+                                {{ ucfirst((string) $logStatus) }}
+                            </span>
                         </td>
                         <td class="px-4 py-3">
                             <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $badge }}">
@@ -129,7 +204,14 @@
                             </span>
                         </td>
                         <td class="px-4 py-3">
-                            <div class="font-mono text-xs text-slate-800 dark:text-slate-200">{{ $subjectLabel }}</div>
+                            <div class="font-semibold text-slate-900 dark:text-slate-100">{{ $causerName }}</div>
+                            <div class="text-xs text-slate-500">{{ $causerEmail }}</div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $subjectLabel }}</div>
+                            @if ($subjectTitle)
+                                <div class="text-xs font-medium text-slate-700 dark:text-slate-300 truncate max-w-[200px]" title="{{ $subjectTitle }}">{{ $subjectTitle }}</div>
+                            @endif
                             @if ($log->description)
                                 <div class="text-[11px] text-slate-500 dark:text-slate-400">{{ $log->description }}</div>
                             @endif
@@ -162,26 +244,18 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="px-4 py-3 font-mono text-xs text-slate-700 dark:text-slate-300">{{ $ip ?? '—' }}</td>
                         <td class="px-4 py-3">
+                            <div class="font-mono text-xs text-slate-700 dark:text-slate-300">{{ $ip ?? '—' }}</div>
                             @if ($country)
-                                <div class="flex items-center gap-2">
-                                    @if ($countryCode)
-                                        <span class="font-mono text-[10px] uppercase tracking-wider text-slate-400">{{ $countryCode }}</span>
-                                    @endif
-                                    <div class="min-w-0">
-                                        <div class="truncate text-xs font-semibold text-slate-700 dark:text-slate-200">{{ $country }}</div>
-                                        @if ($city)
-                                            <div class="truncate text-[11px] text-slate-500 dark:text-slate-400">{{ $city }}</div>
-                                        @endif
-                                    </div>
+                                <div class="text-[11px] text-slate-500 dark:text-slate-400">
+                                    {{ $city ? "{$city}, " : '' }}{{ $country }}
                                 </div>
-                            @else
-                                <span class="text-xs text-slate-400">—</span>
                             @endif
                         </td>
-                        <td class="px-4 py-3 text-slate-700 dark:text-slate-300">{{ $browser ?? '—' }}</td>
-                        <td class="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">{{ $log->created_at?->format('d M Y · h:i A') }}</td>
+                        <td class="px-4 py-3 text-xs text-slate-600 dark:text-slate-300">
+                            <div class="font-medium">{{ $log->created_at?->format('d M Y · h:i A') }}</div>
+                            <div class="text-[11px] text-slate-400">{{ $log->created_at?->diffForHumans() }}</div>
+                        </td>
                         <td class="px-4 py-3 text-right">
                             <button type="button"
                                 @click='openLog = {{ json_encode([
@@ -204,7 +278,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="11" class="px-4 py-0">
+                        <td colspan="10" class="px-4 py-0">
                             <x-admin.empty-state
                                 icon="history"
                                 title="No activity matches your filter."

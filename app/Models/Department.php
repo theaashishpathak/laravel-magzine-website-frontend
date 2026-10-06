@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasContextualActivityLog;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,10 +10,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\LogOptions;
 
 class Department extends Model
 {
-    use HasFactory;
+    use HasContextualActivityLog, HasFactory;
+
+    public function activityLogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'code', 'status', 'head_user_id'])
+            ->logOnlyDirty()
+            ->useLogName('department')
+            ->setDescriptionForEvent(fn (string $event): string => "Department {$event}")
+            ->dontSubmitEmptyLogs();
+    }
 
     public const STATUS_ACTIVE = 'active';
 

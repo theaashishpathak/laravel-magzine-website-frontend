@@ -8,20 +8,20 @@
         <form wire:submit="changePassword" class="grid gap-4 sm:grid-cols-2">
             <div class="sm:col-span-2">
                 <label class="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-200">Current password</label>
-                <input type="password" wire:model="currentPassword" autocomplete="current-password"
-                       class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-950">
+                <x-password-input wire:model="currentPassword" autocomplete="current-password"
+                       class="rounded-lg px-3 py-2 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
                 @error('currentPassword') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label class="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-200">New password</label>
-                <input type="password" wire:model="newPassword" autocomplete="new-password"
-                       class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-950">
+                <x-password-input wire:model="newPassword" autocomplete="new-password"
+                       class="rounded-lg px-3 py-2 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
                 @error('newPassword') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label class="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-200">Confirm new password</label>
-                <input type="password" wire:model="newPasswordConfirmation" autocomplete="new-password"
-                       class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-950">
+                <x-password-input wire:model="newPasswordConfirmation" autocomplete="new-password"
+                       class="rounded-lg px-3 py-2 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
             </div>
             <div class="sm:col-span-2">
                 <button type="submit"
