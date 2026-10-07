@@ -87,7 +87,7 @@ test('smoke: guest can load public frontend routes', function (string $path): vo
     'home' => ['/'],
     'home (en prefix)' => ['/en'],
     'about page' => ['/page/about'],
-    'category page' => ['/category/technology'],
+    'category page' => ['/category/artificial-intelligence'],
     'sitemap' => ['/sitemap.xml'],
     'robots' => ['/robots.txt'],
     'rss feed' => ['/feed.xml'],
