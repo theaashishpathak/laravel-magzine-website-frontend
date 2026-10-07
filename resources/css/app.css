@@ -920,14 +920,21 @@ html.dark .blog-card:hover,
 |--------------------------------------------------------------------------
 */
 
-/* Hide scrollbar but keep scrollability (used by breaking news ticker, category nav) */
-.scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+/* Hide scrollbar but keep scrollability across all utility names (.scrollbar-hide, .scrollbar-none, .no-scrollbar) */
+.scrollbar-hide,
+.scrollbar-none,
+.no-scrollbar {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
+.scrollbar-hide::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
 }
 
 /* Smooth scroll for anchor jumps (#newsletter etc.) */
@@ -935,12 +942,29 @@ html {
     scroll-behavior: smooth;
 }
 
-/* Better focus rings — keyboard-only */
-:focus-visible {
+/* Better focus rings — keyboard-only for interactive links and buttons (excluding form inputs) */
+:focus-visible:not(input):not(textarea):not(select) {
     outline: 2px solid rgb(99 102 241);
     /* indigo-500 */
     outline-offset: 2px;
     border-radius: 0.375rem;
+}
+
+/* Form inputs manage their own borders and focus styling — prevent double outlines/bars */
+input,
+textarea,
+select {
+    outline: none !important;
+}
+
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible {
+    outline: none !important;
+    outline-offset: 0 !important;
 }
 
 /* Selection color */

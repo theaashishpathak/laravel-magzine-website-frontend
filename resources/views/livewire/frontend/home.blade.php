@@ -50,9 +50,8 @@
 
     // Fetch real top categories with post counts
     $popularCategory = \App\Models\Category::query()
-        ->whereHas('posts', fn($q) => $q->where('status', \App\Enums\PostStatus::Published->value))
         ->withCount(['posts' => fn($q) => $q->where('status', \App\Enums\PostStatus::Published->value)])
-        ->orderByDesc('posts_count')
+        ->orderBy('sort_order')
         ->take(12)
         ->get();
 
@@ -161,7 +160,7 @@
                             class="relative flex items-center max-w-xl rounded-full border border-slate-200/90 bg-white/85 p-1.5 shadow-xl shadow-indigo-500/5 backdrop-blur-xl transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 dark:border-white/15 dark:bg-slate-900/80 dark:shadow-none">
                             <i data-lucide="search" class="ml-4 h-5 w-5 text-slate-400 dark:text-neutral-500 shrink-0"></i>
                             <input type="text" name="q" placeholder="Search articles, topics, or keywords..."
-                                class="w-full bg-transparent px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none dark:text-white dark:placeholder-neutral-500 font-medium">
+                                class="w-full min-w-0 border-0 border-transparent bg-transparent px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 shadow-none outline-none ring-0 focus:border-0 focus:border-transparent focus:outline-none focus:ring-0 focus:shadow-none dark:text-white dark:placeholder-neutral-500 font-medium">
                             <button type="submit"
                                 class="grid h-10 w-10 sm:h-11 sm:w-11 shrink-0 place-items-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-indigo-500/25 transition hover:shadow-indigo-500/40 hover:scale-105 active:scale-95 cursor-pointer"
                                 title="Search" aria-label="Search">
@@ -261,7 +260,7 @@
                     Explore Topics
                 </h2>
             </div>
-            <a href="{{ route('frontend.search') }}"
+            <a href="{{ route('frontend.categories') }}" wire:navigate
                class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 transition group">
                 <span>View All Categories</span>
                 <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"></i>
@@ -301,7 +300,7 @@
             @endphp
 
             @foreach ($displayTopics as $topic)
-                <a href="{{ $topic['url'] }}"
+                <a href="{{ $topic['url'] }}" wire:navigate
                    class="glass-card glass-card-hover group relative flex flex-col justify-between rounded-2xl p-5 sm:p-6 transition-all duration-300">
                     <div>
                         {{-- Icon Badge --}}

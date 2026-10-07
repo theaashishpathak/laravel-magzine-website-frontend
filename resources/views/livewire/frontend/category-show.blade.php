@@ -1,6 +1,19 @@
 @php
     $currentLocale = app(\App\Support\LocaleResolver::class)->current();
     $catDescMap = [
+        'artificial-intelligence' => 'Deep dives into core AI breakthroughs, neural networks, machine learning algorithms, and intelligent computing.',
+        'generative-ai' => 'Exploring modern generative models, multimodal intelligence, diffusion architectures, synthetic media, and creative workflows.',
+        'llms-nlp' => 'Practical guides, architecture breakdowns, prompt engineering, context windows, and natural language processing developments.',
+        'ai-agents' => 'Autonomous agent architectures, multi-agent coordination, tool execution loops, memory systems, and goal-driven AI.',
+        'ai-engineering' => 'Production AI stacks, RAG evaluation, embedding pipelines, fine-tuning, latency optimization, and robust model deployment.',
+        'software-development' => 'Clean code, system architecture, design patterns, testing strategies, and modern programming language paradigms.',
+        'web-development' => 'Fullstack web development, modern frontend frameworks, responsive UI, backend architectures, and web performance.',
+        'cloud-devops' => 'Cloud infrastructure, Kubernetes, CI/CD automation, Docker, observability, site reliability, and container orchestration.',
+        'cybersecurity' => 'Vulnerability research, application defense, cryptography, zero trust architectures, ethical hacking, and digital privacy.',
+        'data-analytics' => 'Data pipelines, modern data warehousing, stream processing, business intelligence dashboards, and predictive metrics.',
+        'blockchain-web3' => 'Decentralized networks, smart contracts, zero-knowledge proofs, consensus mechanisms, and Web3 protocol architecture.',
+        'emerging-technology' => 'Quantum computing, spatial computing, robotics, neuromorphic hardware, edge devices, and frontier tech horizons.',
+        // Legacy fallbacks
         'technology' => 'Discover the best tech tools, software and platforms to boost your productivity, creativity and workflow.',
         'business' => 'Insights into emerging markets, enterprise strategies, venture capital and global finance.',
         'world' => 'Global news, geopolitical analyses, diplomacy and international community reports.',
@@ -55,7 +68,7 @@
                         <input type="text"
                                wire:model.live.debounce.300ms="search"
                                placeholder="Search articles in {{ $activeCategoryName }}..."
-                               class="w-full bg-transparent px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none dark:text-white dark:placeholder-neutral-500 font-medium">
+                               class="w-full min-w-0 border-0 border-transparent bg-transparent px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 shadow-none outline-none ring-0 focus:border-0 focus:border-transparent focus:outline-none focus:ring-0 focus:shadow-none dark:text-white dark:placeholder-neutral-500 font-medium">
                         @if ($search !== '')
                             <button type="button" wire:click="$set('search', '')" class="mr-2 text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 cursor-pointer" title="Clear">
                                 <i data-lucide="x" class="h-4 w-4"></i>
@@ -121,7 +134,7 @@
                         <input type="text"
                                wire:model.live.debounce.300ms="search"
                                placeholder="Search articles across all categories..."
-                               class="w-full bg-transparent px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none dark:text-white dark:placeholder-neutral-500 font-medium">
+                               class="w-full min-w-0 border-0 border-transparent bg-transparent px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 shadow-none outline-none ring-0 focus:border-0 focus:border-transparent focus:outline-none focus:ring-0 focus:shadow-none dark:text-white dark:placeholder-neutral-500 font-medium">
                         @if ($search !== '')
                             <button type="button" wire:click="$set('search', '')" class="mr-2 text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 cursor-pointer" title="Clear">
                                 <i data-lucide="x" class="h-4 w-4"></i>
@@ -224,7 +237,7 @@
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 
                 {{-- Category Filter Pills (Scrollable horizontally) --}}
-                <div class="flex items-center gap-2 sm:gap-2.5 overflow-x-auto pb-2 lg:pb-0 scrollbar-none flex-1 min-w-0">
+                <div class="flex items-center gap-2 sm:gap-2.5 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide scrollbar-none no-scrollbar flex-1 min-w-0">
                     <button type="button"
                             wire:click="selectCategory('all')"
                             class="shrink-0 rounded-full px-5 py-2.5 text-xs font-bold transition cursor-pointer shadow-xs {{ $selectedCategory === 'all' ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-950' : 'border border-slate-200/80 bg-white/80 text-slate-700 hover:border-indigo-400 hover:text-indigo-600 dark:border-white/10 dark:bg-slate-900/60 dark:text-neutral-300 dark:hover:border-indigo-400' }}">
@@ -252,7 +265,7 @@
                         <input type="text"
                                wire:model.live.debounce.300ms="search"
                                placeholder="Search articles, topics..."
-                               class="w-full bg-transparent px-3 py-1.5 text-xs font-medium text-slate-900 placeholder-slate-400 outline-none dark:text-white dark:placeholder-neutral-500">
+                               class="w-full min-w-0 border-0 border-transparent bg-transparent px-3 py-1.5 text-xs font-medium text-slate-900 placeholder-slate-400 shadow-none outline-none ring-0 focus:border-0 focus:border-transparent focus:outline-none focus:ring-0 focus:shadow-none dark:text-white dark:placeholder-neutral-500">
                         
                         @if ($search !== '')
                             <button type="button"
@@ -266,9 +279,7 @@
                         <button type="button"
                                 class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs transition hover:opacity-95 cursor-pointer"
                                 aria-label="Search">
-                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                            </svg>
+                            <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i>
                         </button>
                     </div>
                 </div>

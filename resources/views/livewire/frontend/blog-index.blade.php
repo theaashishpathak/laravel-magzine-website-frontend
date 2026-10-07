@@ -29,7 +29,7 @@
                       class="relative flex items-center rounded-full border border-slate-200/90 bg-white/90 p-1.5 shadow-xl shadow-indigo-500/5 backdrop-blur-xl transition-all focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 dark:border-white/15 dark:bg-slate-900/80 dark:shadow-none">
                     <i data-lucide="search" class="ml-4 h-5 w-5 text-slate-400 dark:text-neutral-500 shrink-0"></i>
                     <input type="text" name="q" placeholder="Search articles, topics, or keywords..."
-                           class="w-full bg-transparent px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none dark:text-white dark:placeholder-neutral-500 font-medium">
+                           class="w-full min-w-0 border-0 border-transparent bg-transparent px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 shadow-none outline-none ring-0 focus:border-0 focus:border-transparent focus:outline-none focus:ring-0 focus:shadow-none dark:text-white dark:placeholder-neutral-500 font-medium">
                     <button type="submit"
                             class="grid h-10 w-10 sm:h-11 sm:w-11 shrink-0 place-items-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-indigo-500/25 transition hover:shadow-indigo-500/40 hover:scale-105 active:scale-95 cursor-pointer"
                             title="Search" aria-label="Search">
@@ -49,7 +49,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 pt-4 border-t border-slate-200/70 dark:border-white/10">
             
             {{-- Category Filter Pills (Scrollable horizontally) --}}
-            <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs font-semibold">
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide scrollbar-none no-scrollbar text-xs font-semibold">
                 <button type="button"
                         wire:click="selectCategory('all')"
                         class="rounded-full px-4 py-2 transition-all cursor-pointer whitespace-nowrap {{ $selectedCategory === 'all' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-indigo-500/25 font-bold' : 'border border-slate-200/80 bg-white/80 text-slate-600 hover:border-indigo-400 hover:text-indigo-600 dark:border-white/10 dark:bg-slate-900/60 dark:text-neutral-300 dark:hover:border-indigo-400 dark:hover:text-white' }}">
@@ -229,19 +229,26 @@
                     <h3 class="sidebar-widget-title text-xs font-bold uppercase tracking-[0.16em] text-indigo-600 dark:text-indigo-400 mb-4" style="font-family: 'Syne', sans-serif;">
                         Search Blog
                     </h3>
-                    <div class="relative flex items-center rounded-2xl border border-slate-200/90 bg-slate-50/80 p-1.5 focus-within:border-indigo-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 dark:border-white/10 dark:bg-slate-900/60 dark:focus-within:bg-slate-900 transition">
+                    <div class="relative flex items-center rounded-2xl border border-slate-200/90 bg-slate-50/80 p-1.5 transition-all focus-within:border-indigo-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 dark:border-white/10 dark:bg-slate-900/60 dark:focus-within:border-indigo-500/60 dark:focus-within:bg-slate-900">
                         <i data-lucide="search" class="ml-3 h-4 w-4 text-slate-400 dark:text-neutral-500 shrink-0"></i>
                         <input type="text"
                                wire:model.live.debounce.300ms="search"
                                placeholder="Search articles, topics..."
-                               class="w-full bg-transparent px-2.5 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none dark:text-white dark:placeholder-neutral-500 font-medium">
+                               class="w-full min-w-0 border-0 border-transparent bg-transparent px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 shadow-none outline-none ring-0 focus:border-0 focus:border-transparent focus:outline-none focus:ring-0 focus:shadow-none dark:text-white dark:placeholder-neutral-500 font-medium">
                         
+                        @if ($search !== '')
+                            <button type="button"
+                                    wire:click="$set('search', '')"
+                                    class="mr-1 grid h-7 w-7 shrink-0 place-items-center rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-white/10 transition cursor-pointer"
+                                    title="Clear search">
+                                <i data-lucide="x" class="h-3.5 w-3.5"></i>
+                            </button>
+                        @endif
+
                         <button type="button"
-                                class="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs"
+                                class="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs transition hover:scale-105 active:scale-95 cursor-pointer"
                                 aria-label="Search">
-                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                            </svg>
+                            <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i>
                         </button>
                     </div>
                 </div>

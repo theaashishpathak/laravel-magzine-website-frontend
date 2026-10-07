@@ -41,7 +41,7 @@
                            wire:model.live.debounce.300ms="query"
                            placeholder="Type a topic, author, keyword…"
                            autofocus
-                           class="w-full bg-transparent px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none dark:text-white dark:placeholder-neutral-500 font-medium">
+                           class="w-full min-w-0 border-0 border-transparent bg-transparent px-3 py-2 text-xs sm:text-sm text-slate-900 placeholder-slate-400 shadow-none outline-none ring-0 focus:border-0 focus:border-transparent focus:outline-none focus:ring-0 focus:shadow-none dark:text-white dark:placeholder-neutral-500 font-medium">
                     @if (trim($query) !== '')
                         <button type="button" wire:click="$set('query', '')" class="mr-2 text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 cursor-pointer" title="Clear">
                             <i data-lucide="x" class="h-4 w-4"></i>

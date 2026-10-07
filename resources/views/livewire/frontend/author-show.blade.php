@@ -194,7 +194,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-white/10">
             
             {{-- Topic Filter Pills --}}
-            <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs font-semibold">
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide scrollbar-none no-scrollbar text-xs font-semibold">
                 <button type="button"
                         wire:click="selectCategory('all')"
                         class="rounded-full px-4 py-2 transition-all cursor-pointer whitespace-nowrap {{ $selectedCategory === 'all' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-indigo-500/25 font-bold' : 'border border-slate-200/80 bg-white/80 text-slate-600 hover:border-indigo-400 hover:text-indigo-600 dark:border-white/10 dark:bg-slate-900/60 dark:text-neutral-300 dark:hover:border-indigo-400 dark:hover:text-white' }}">
