@@ -51,7 +51,9 @@ class SyncTechnologyCategoriesAction
             $newCategoryIds = [];
 
             foreach (self::TECH_CATEGORIES as $index => $item) {
-                // Find existing category by translation slug or icon
+                $category = null; // ALWAYS reset per iteration to prevent overwriting
+
+                // 1. Check if category exists by translation slug or name
                 $existingTranslation = CategoryTranslation::where('language_id', $english->id)
                     ->where(function ($q) use ($item) {
                         $q->where('slug', $item['slug'])
@@ -61,24 +63,24 @@ class SyncTechnologyCategoriesAction
 
                 if ($existingTranslation) {
                     $category = Category::withTrashed()->find($existingTranslation->category_id);
-                    if ($category) {
-                        if ($category->trashed()) {
-                            $category->restore();
-                        }
-                        $category->update([
-                            'icon' => $item['icon'],
-                            'color' => $item['color'],
-                            'show_in_menu' => true,
-                            'show_on_homepage' => true,
-                            'is_featured' => $item['is_featured'],
-                            'sort_order' => $index + 1,
-                            'layout' => Category::LAYOUT_GRID,
-                        ]);
+                    if ($category && $category->trashed()) {
+                        $category->restore();
                     }
                 }
 
-                if (! isset($category) || ! $category) {
+                // 2. If not found, create new category
+                if (! $category) {
                     $category = Category::create([
+                        'icon' => $item['icon'],
+                        'color' => $item['color'],
+                        'show_in_menu' => true,
+                        'show_on_homepage' => true,
+                        'is_featured' => $item['is_featured'],
+                        'sort_order' => $index + 1,
+                        'layout' => Category::LAYOUT_GRID,
+                    ]);
+                } else {
+                    $category->update([
                         'icon' => $item['icon'],
                         'color' => $item['color'],
                         'show_in_menu' => true,
@@ -89,6 +91,7 @@ class SyncTechnologyCategoriesAction
                     ]);
                 }
 
+                // 3. Upsert English translation
                 CategoryTranslation::updateOrCreate(
                     [
                         'category_id' => $category->id,
@@ -105,18 +108,24 @@ class SyncTechnologyCategoriesAction
                 $syncedCategories[] = $item['name'];
             }
 
-            // Clean up legacy categories not in the 12 tech list
+            // Clean up any remaining legacy categories outside the 12 tech categories
             $legacyCategories = Category::whereNotIn('id', $newCategoryIds)->get();
-            $defaultCatId = $newCategoryIds[0]; // Artificial Intelligence
+            $firstCatId = $newCategoryIds[0];
 
             foreach ($legacyCategories as $legacy) {
-                // Re-assign posts from legacy categories to the new tech categories
-                Post::where('category_id', $legacy->id)->update(['category_id' => $defaultCatId]);
+                Post::where('category_id', $legacy->id)->update(['category_id' => $firstCatId]);
                 Post::where('subcategory_id', $legacy->id)->update(['subcategory_id' => null]);
-
-                // Remove legacy category translations and category
                 CategoryTranslation::where('category_id', $legacy->id)->delete();
                 $legacy->forceDelete();
+            }
+
+            // Distribute all existing posts across the 12 categories evenly
+            $posts = Post::orderBy('id')->get();
+            if ($posts->isNotEmpty()) {
+                foreach ($posts as $pIdx => $post) {
+                    $targetCatId = $newCategoryIds[$pIdx % count($newCategoryIds)];
+                    $post->update(['category_id' => $targetCatId]);
+                }
             }
 
             // Sync Header Navigation Dropdown Items
@@ -136,10 +145,10 @@ class SyncTechnologyCategoriesAction
                 ]);
             }
 
-            // Remove old children under Categories dropdown
+            // Clear old child items under Categories dropdown
             NavigationItem::where('parent_id', $catDropdown->id)->delete();
 
-            // Insert 12 new tech category items under dropdown
+            // Insert all 12 categories as dropdown children
             $categories = Category::whereIn('id', $newCategoryIds)
                 ->orderBy('sort_order')
                 ->get();
@@ -162,7 +171,7 @@ class SyncTechnologyCategoriesAction
                 }
             }
 
-            // Clear cache
+            // Clear optimization cache
             Artisan::call('optimize:clear');
 
             return [
