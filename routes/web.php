@@ -252,6 +252,39 @@ Route::get('/system/maintenance', function (\Illuminate\Http\Request $request) {
         return response('<div style="font-family:sans-serif;padding:2rem;"><h2>Storage Link:</h2><pre>' . htmlspecialchars(\Illuminate\Support\Facades\Artisan::output()) . '</pre></div>');
     }
 
+    if ($action === 'migrate') {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        $output = "Migrations:\n" . \Illuminate\Support\Facades\Artisan::output();
+        return response('<div style="font-family:sans-serif;padding:2rem;"><h2>Database Migrations:</h2><pre>' . htmlspecialchars($output) . '</pre></div>');
+    }
+
+    if ($action === 'sync-categories' || $action === 'deploy-sync') {
+        // Run migrations first
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
+
+        // Run category sync
+        $syncResult = app(\App\Actions\Category\SyncTechnologyCategoriesAction::class)->execute();
+
+        // Ensure storage link
+        \Illuminate\Support\Facades\Artisan::call('storage:link', ['--force' => true]);
+
+        // Clear cache
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        $cacheOutput = \Illuminate\Support\Facades\Artisan::output();
+
+        $responseHtml = '<div style="font-family:sans-serif;padding:2rem;max-width:800px;margin:auto;">';
+        $responseHtml .= '<h2 style="color:#4f46e5;">🚀 Production Deploy & Sync Completed</h2>';
+        $responseHtml .= '<p><strong>Synced Categories:</strong> ' . count($syncResult['list']) . '</p>';
+        $responseHtml .= '<ul>' . implode('', array_map(fn($c) => "<li>{$c}</li>", $syncResult['list'])) . '</ul>';
+        $responseHtml .= '<h3>Migrations Output:</h3><pre style="background:#f1f5f9;padding:1rem;border-radius:8px;">' . htmlspecialchars($migrateOutput ?: 'Nothing to migrate.') . '</pre>';
+        $responseHtml .= '<h3>Cache Output:</h3><pre style="background:#f1f5f9;padding:1rem;border-radius:8px;">' . htmlspecialchars($cacheOutput) . '</pre>';
+        $responseHtml .= '</div>';
+
+        return response($responseHtml);
+    }
+
     \Illuminate\Support\Facades\Artisan::call('optimize:clear');
     $output = \Illuminate\Support\Facades\Artisan::output();
     if (! empty($deletedHotFiles)) {

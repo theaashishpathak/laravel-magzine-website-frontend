@@ -62,9 +62,11 @@ jobs:
             **/*.zip
             **/phpunit.xml
 
-      - name: 🔄 Auto-Clear Laravel Cache
-        if: env.SITE_DOMAIN != ''
-        env:
-          SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
+      - name: 🔄 Auto-Sync Database, Categories & Clear Cache
         run: |
-          curl -s "https://${{ secrets.SITE_DOMAIN }}/system/maintenance?key=ff6dc8453b315ba7" || true
+          TARGET_DOMAIN="${{ secrets.SITE_DOMAIN || 'rupantrix.freehosting.dev' }}"
+          echo "Triggering post-deployment database migration, category sync & cache clearing on: $TARGET_DOMAIN"
+          RESPONSE=$(curl -s -L --max-time 60 "https://${TARGET_DOMAIN}/system/maintenance?key=ff6dc8453b315ba7&action=deploy-sync" || true)
+          echo "Maintenance sync response:"
+          echo "$RESPONSE"
+
