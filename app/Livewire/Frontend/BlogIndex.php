@@ -103,10 +103,9 @@ class BlogIndex extends Component
     public function categories(): Collection
     {
         return Category::query()
-            ->whereHas('posts', fn ($q) => $q->where('status', \App\Enums\PostStatus::Published->value))
             ->withCount(['posts' => fn ($q) => $q->where('status', \App\Enums\PostStatus::Published->value)])
-            ->orderByDesc('posts_count')
-            ->take(10)
+            ->orderBy('sort_order')
+            ->take(12)
             ->get();
     }
 

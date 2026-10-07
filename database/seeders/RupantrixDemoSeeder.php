@@ -241,12 +241,18 @@ class RupantrixDemoSeeder extends Seeder
     private function seedCategories(): void
     {
         $blueprint = [
-            ['key' => 'world', 'en' => ['name' => 'World', 'slug' => 'world'], 'bn' => ['name' => 'বিশ্ব', 'slug' => 'biswo'], 'icon' => 'globe', 'color' => '#0ea5e9'],
-            ['key' => 'politics', 'en' => ['name' => 'Politics', 'slug' => 'politics'], 'bn' => ['name' => 'রাজনীতি', 'slug' => 'rajniti'], 'icon' => 'landmark', 'color' => '#ef4444'],
-            ['key' => 'tech', 'en' => ['name' => 'Technology', 'slug' => 'technology'], 'bn' => ['name' => 'প্রযুক্তি', 'slug' => 'projukti'], 'icon' => 'cpu', 'color' => '#6366f1'],
-            ['key' => 'business', 'en' => ['name' => 'Business', 'slug' => 'business'], 'bn' => ['name' => 'বাণিজ্য', 'slug' => 'banijya'], 'icon' => 'briefcase', 'color' => '#f59e0b'],
-            ['key' => 'culture', 'en' => ['name' => 'Culture', 'slug' => 'culture'], 'bn' => ['name' => 'সংস্কৃতি', 'slug' => 'sonskriti'], 'icon' => 'palette', 'color' => '#ec4899'],
-            ['key' => 'sports', 'en' => ['name' => 'Sports', 'slug' => 'sports'], 'bn' => ['name' => 'খেলা', 'slug' => 'khela'], 'icon' => 'trophy', 'color' => '#10b981'],
+            ['key' => 'artificial-intelligence', 'name' => 'Artificial Intelligence', 'slug' => 'artificial-intelligence', 'icon' => 'cpu', 'color' => '#6366f1', 'is_featured' => true],
+            ['key' => 'generative-ai', 'name' => 'Generative AI', 'slug' => 'generative-ai', 'icon' => 'sparkles', 'color' => '#a855f7', 'is_featured' => true],
+            ['key' => 'llms-nlp', 'name' => 'LLMs & NLP', 'slug' => 'llms-nlp', 'icon' => 'message-square-code', 'color' => '#ec4899', 'is_featured' => true],
+            ['key' => 'ai-agents', 'name' => 'AI Agents', 'slug' => 'ai-agents', 'icon' => 'bot', 'color' => '#8b5cf6', 'is_featured' => true],
+            ['key' => 'ai-engineering', 'name' => 'AI Engineering', 'slug' => 'ai-engineering', 'icon' => 'binary', 'color' => '#3b82f6', 'is_featured' => true],
+            ['key' => 'software-development', 'name' => 'Software Development', 'slug' => 'software-development', 'icon' => 'code-2', 'color' => '#06b6d4', 'is_featured' => true],
+            ['key' => 'web-development', 'name' => 'Web Development', 'slug' => 'web-development', 'icon' => 'globe', 'color' => '#10b981', 'is_featured' => false],
+            ['key' => 'cloud-devops', 'name' => 'Cloud & DevOps', 'slug' => 'cloud-devops', 'icon' => 'cloud', 'color' => '#f59e0b', 'is_featured' => false],
+            ['key' => 'cybersecurity', 'name' => 'Cybersecurity', 'slug' => 'cybersecurity', 'icon' => 'shield-check', 'color' => '#ef4444', 'is_featured' => false],
+            ['key' => 'data-analytics', 'name' => 'Data & Analytics', 'slug' => 'data-analytics', 'icon' => 'bar-chart-3', 'color' => '#14b8a6', 'is_featured' => false],
+            ['key' => 'blockchain-web3', 'name' => 'Blockchain & Web3', 'slug' => 'blockchain-web3', 'icon' => 'blocks', 'color' => '#f97316', 'is_featured' => false],
+            ['key' => 'emerging-technology', 'name' => 'Emerging Technology', 'slug' => 'emerging-technology', 'icon' => 'zap', 'color' => '#84cc16', 'is_featured' => false],
         ];
 
         $mediaIds = Media::query()->pluck('id')->all();
@@ -259,15 +265,14 @@ class RupantrixDemoSeeder extends Seeder
                     'image_id' => $mediaCount > 0 ? $mediaIds[$index % $mediaCount] : null,
                     'show_in_menu' => true,
                     'show_on_homepage' => true,
-                    'is_featured' => $index < 3,
-                    'sort_order' => $index,
+                    'is_featured' => $entry['is_featured'],
+                    'sort_order' => $index + 1,
                     'color' => $entry['color'],
                     'layout' => Category::LAYOUT_GRID,
                 ],
             );
 
-            $this->upsertCategoryTranslation($category, $this->english, $entry['en']);
-            $this->upsertCategoryTranslation($category, $this->bangla, $entry['bn']);
+            $this->upsertCategoryTranslation($category, $this->english, ['name' => $entry['name'], 'slug' => $entry['slug']]);
 
             $this->categories[$entry['key']] = $category->fresh('translations');
         }
@@ -547,7 +552,7 @@ class RupantrixDemoSeeder extends Seeder
             Post::factory()
                 ->state([
                     'status' => PostStatus::Archived->value,
-                    'category_id' => $this->categories['business']->id,
+                    'category_id' => $this->categories['software-development']->id,
                     'featured_image_id' => $getMediaId($i + 70),
                 ])
                 ->withAuthor($authors[$i % count($authors)]->id)
@@ -561,26 +566,26 @@ class RupantrixDemoSeeder extends Seeder
     private function publishedHeadlines(): array
     {
         return [
-            ['cat' => 'tech', 'en' => ['title' => 'OpenAI unveils GPT-5 with multimodal reasoning', 'excerpt' => 'The new flagship model adds real-time vision, longer context windows, and tool-use that finally rivals human reasoning.'], 'bn' => ['title' => 'ওপেনএআই উন্মোচন করল মাল্টিমোডাল রিজনিং সম্পন্ন GPT-5'], 'breaking' => true, 'featured' => true, 'trending' => true],
-            ['cat' => 'world', 'en' => ['title' => 'UN climate summit reaches landmark agreement on coal phase-out', 'excerpt' => 'Forty-three nations pledged to retire coal-fired power generation by 2035 in the most ambitious deal of the decade.'], 'featured' => true, 'pick' => true],
-            ['cat' => 'business', 'en' => ['title' => 'Apple becomes first $5 trillion company on AI hardware boom', 'excerpt' => 'Investors poured into Apple shares after the Cupertino giant unveiled its dedicated on-device AI chip lineup.'], 'trending' => true],
-            ['cat' => 'politics', 'en' => ['title' => 'Bangladesh PM announces sweeping digital governance reforms', 'excerpt' => 'A new e-Government policy aims to bring 80% of citizen services online within three years.'], 'pick' => true],
-            ['cat' => 'sports', 'en' => ['title' => 'Bangladesh stuns Australia in nail-biting T20 World Cup opener', 'excerpt' => 'Mahmudullah\'s last-over six sealed a 2-wicket win in Dhaka.'], 'breaking' => true, 'trending' => true],
-            ['cat' => 'tech', 'en' => ['title' => 'Google merges Search and Gemini into a single conversational interface', 'excerpt' => 'The rebranded experience replaces the classic 10-blue-links page for signed-in users in 12 countries.']],
-            ['cat' => 'culture', 'en' => ['title' => 'Bengali cinema sees record festival haul at Cannes 2026', 'excerpt' => 'Three films from Dhaka took home prizes in this year\'s Un Certain Regard section.']],
-            ['cat' => 'business', 'en' => ['title' => 'Stripe launches embedded credit lines for small merchants', 'excerpt' => 'The new product extends working capital to sellers based on payments history rather than credit score.']],
-            ['cat' => 'world', 'en' => ['title' => 'EU drafts AI Liability Directive ahead of summer parliament vote', 'excerpt' => 'The bill would make developers presumptively liable for harm caused by general-purpose AI.']],
-            ['cat' => 'tech', 'en' => ['title' => 'NVIDIA Blackwell GPUs sell out 8 months before launch', 'excerpt' => 'Hyperscalers booked the entire production run, leaving smaller AI labs scrambling for capacity.'], 'trending' => true],
-            ['cat' => 'sports', 'en' => ['title' => 'Formula 1 announces 2027 grid expansion with two new constructors', 'excerpt' => 'Audi and a Saudi-backed Cadillac team will join the existing 10 constructors.']],
-            ['cat' => 'politics', 'en' => ['title' => 'UK Labour government unveils £15bn green industrial strategy', 'excerpt' => 'Battery, wind, and hydrogen sectors get dedicated tax credits modelled on the US Inflation Reduction Act.']],
-            ['cat' => 'business', 'en' => ['title' => 'Bitcoin retraces from $150k as US regulator clears spot Ether ETF', 'excerpt' => 'The SEC\'s long-awaited approval triggered rotation into Ethereum at the top of the cycle.']],
-            ['cat' => 'culture', 'en' => ['title' => 'Pulitzer fiction prize goes to debut Bangladeshi-American novelist', 'excerpt' => 'Tahmina Rahman\'s "The Last Monsoon" was praised for its tender portrayal of intergenerational migration.'], 'pick' => true],
-            ['cat' => 'world', 'en' => ['title' => 'India and EU finalise long-stalled free trade agreement', 'excerpt' => 'The deal eliminates duties on 90% of goods over seven years and includes a chapter on data protection.']],
-            ['cat' => 'tech', 'en' => ['title' => 'Anthropic raises $10bn at $200bn valuation to scale Claude', 'excerpt' => 'The funding round, led by Google and existing backers, is the largest in AI history.']],
-            ['cat' => 'sports', 'en' => ['title' => 'Real Madrid clinch 16th Champions League title', 'excerpt' => 'Vinícius Júnior\'s extra-time goal sealed a 2-1 win over Manchester City at Wembley.']],
-            ['cat' => 'business', 'en' => ['title' => 'Tesla launches sub-$25k Model 2 ahead of schedule', 'excerpt' => 'Production starts in Berlin in Q3 — Tesla\'s long-promised volume-EV is finally here.']],
-            ['cat' => 'culture', 'en' => ['title' => 'Taylor Swift\'s Eras Tour passes $3bn in lifetime gross', 'excerpt' => 'Adding Asia legs in 2026 pushed the world tour past the previous record set by U2 in 2011.']],
-            ['cat' => 'politics', 'en' => ['title' => 'Saudi Arabia and Iran reopen embassies after seven-year freeze', 'excerpt' => 'China-brokered diplomatic thaw extends to direct flights and a $50bn investment fund.']],
+            ['cat' => 'generative-ai', 'en' => ['title' => 'OpenAI unveils GPT-5 with multimodal reasoning', 'excerpt' => 'The new flagship model adds real-time vision, longer context windows, and tool-use that finally rivals human reasoning.'], 'bn' => ['title' => 'ওপেনএআই উন্মোচন করল মাল্টিমোডাল রিজনিং সম্পন্ন GPT-5'], 'breaking' => true, 'featured' => true, 'trending' => true],
+            ['cat' => 'emerging-technology', 'en' => ['title' => 'Quantum error correction reaches threshold milestone for scalable computing', 'excerpt' => 'Forty-three physical qubits were successfully entangled in a fault-tolerant logical architecture.'], 'featured' => true, 'pick' => true],
+            ['cat' => 'artificial-intelligence', 'en' => ['title' => 'Apple expands on-device Neural Engine chips across entire M5 hardware lineup', 'excerpt' => 'Investors cheered the Cupertino hardware roadmap bringing local 70B parameter models to consumer laptops.'], 'trending' => true],
+            ['cat' => 'web-development', 'en' => ['title' => 'Modern Web Architecture: Building edge-rendered reactive apps in 2026', 'excerpt' => 'From server components to sub-millisecond edge hydration, how production teams are rethinking web apps.'], 'pick' => true],
+            ['cat' => 'ai-agents', 'en' => ['title' => 'Autonomous Coding Agents: Moving from toy demonstrations to production CI/CD loops', 'excerpt' => 'Self-healing deployments and automated pull request generation are reshaping developer throughput.'], 'breaking' => true, 'trending' => true],
+            ['cat' => 'generative-ai', 'en' => ['title' => 'Google merges Search and Gemini into unified multimodal interface', 'excerpt' => 'The rebranded experience replaces traditional link lists with dynamic generative synthesis panels.']],
+            ['cat' => 'software-development', 'en' => ['title' => 'Designing Resilient Distributed Systems: Lessons from 10 years of scale', 'excerpt' => 'Event sourcing, CQRS, and zero-downtime database migrations unpacked with practical architectural patterns.']],
+            ['cat' => 'blockchain-web3', 'en' => ['title' => 'Zero-Knowledge rollups achieve sub-cent settlement on Ethereum Layer 2', 'excerpt' => 'Decentralized liquidity protocols celebrate massive throughput jumps as proving time drops 90%.']],
+            ['cat' => 'artificial-intelligence', 'en' => ['title' => 'EU drafts AI Safety and Frontier Model Directive ahead of parliament vote', 'excerpt' => 'The legislation establishes safety evaluations and reporting requirements for frontier training runs.']],
+            ['cat' => 'ai-engineering', 'en' => ['title' => 'NVIDIA Blackwell Ultra GPUs accelerate mixture-of-experts inference by 4x', 'excerpt' => 'Hyperscalers ramp up cluster deployments with custom liquid cooling and NVLink 5 switches.'], 'trending' => true],
+            ['cat' => 'cloud-devops', 'en' => ['title' => 'Platform Engineering with Kubernetes: Ephemeral preview environments at scale', 'excerpt' => 'How leading engineering teams enable instant per-commit preview environments in seconds.']],
+            ['cat' => 'cybersecurity', 'en' => ['title' => 'Post-Quantum Cryptography: Migrating enterprise TLS to Kyber and Dilithium', 'excerpt' => 'NIST standardizes quantum-resistant algorithms as cloud providers roll out hybrid key exchange.']],
+            ['cat' => 'blockchain-web3', 'en' => ['title' => 'Bitcoin and decentralized timestamping protocols gain institutional adoption', 'excerpt' => 'Sovereign wealth funds and corporate treasuries allocate to decentralized ledger infrastructure.']],
+            ['cat' => 'data-analytics', 'en' => ['title' => 'Real-Time Vector Databases: Benchmarking Milvus, Pinecone, and pgvector at 100M scales', 'excerpt' => 'HNSW vs IVFFlat indexing strategies examined under extreme query concurrency.'], 'pick' => true],
+            ['cat' => 'software-development', 'en' => ['title' => 'Clean Code and Modern PHP: Leveraging Strict Types and Enums in Enterprise Apps', 'excerpt' => 'How modern static analysis and type systems eliminate runtime regressions before production.']],
+            ['cat' => 'artificial-intelligence', 'en' => ['title' => 'Anthropic releases Claude 4.5 Sonnet with extended cognitive deliberation', 'excerpt' => 'Benchmark scores establish new state-of-the-art results across SWE-bench and coding competitions.']],
+            ['cat' => 'ai-agents', 'en' => ['title' => 'Multi-Agent Orchestration with LangGraph and CrewAI: Patterns for real-world reliability', 'excerpt' => 'Designing deterministic supervision loops for non-deterministic LLM agents in production.']],
+            ['cat' => 'web-development', 'en' => ['title' => 'CSS in 2026: Subgrid, Anchor Positioning, and View Transitions without JavaScript', 'excerpt' => 'A showcase of modern CSS capabilities that make bulky animation libraries obsolete.']],
+            ['cat' => 'emerging-technology', 'en' => ['title' => 'Neuromorphic chips demonstrate 100x efficiency gains for edge robotics', 'excerpt' => 'Spiking neural networks running on event-based silicon enable real-time robotic navigation with milliwatts.']],
+            ['cat' => 'llms-nlp', 'en' => ['title' => 'Context Caching and FlashAttention 3: Slashing inference latency in long-form generation', 'excerpt' => 'How memory-efficient attention algorithms enable million-token contexts without quadratic slowdowns.']],
         ];
     }
 
@@ -822,14 +827,14 @@ class RupantrixDemoSeeder extends Seeder
     private function seedRssSources(): void
     {
         $sources = [
-            ['name' => 'BBC World News',              'url' => 'http://feeds.bbci.co.uk/news/world/rss.xml',     'auto' => false, 'cat' => 'world',    'status' => ImportSource::STATUS_ACTIVE],
-            ['name' => 'TechCrunch',                  'url' => 'https://techcrunch.com/feed/',                   'auto' => true,  'cat' => 'tech',     'status' => ImportSource::STATUS_ACTIVE],
-            ['name' => 'The Daily Star Bangladesh',   'url' => 'https://www.thedailystar.net/frontpage/rss.xml', 'auto' => false, 'cat' => 'world',    'status' => ImportSource::STATUS_PAUSED],
-            ['name' => 'The Guardian — Tech',         'url' => 'https://www.theguardian.com/technology/rss',     'auto' => false, 'cat' => 'tech',     'status' => ImportSource::STATUS_ACTIVE],
-            ['name' => 'Reuters Business',            'url' => 'https://www.reuters.com/rssFeed/businessNews',   'auto' => true,  'cat' => 'business', 'status' => ImportSource::STATUS_ACTIVE],
-            ['name' => 'Politico Politics',           'url' => 'https://www.politico.com/rss/politics08.xml',    'auto' => false, 'cat' => 'politics', 'status' => ImportSource::STATUS_ACTIVE],
-            ['name' => 'ESPN Sports',                 'url' => 'https://www.espn.com/espn/rss/news',             'auto' => false, 'cat' => 'sports',   'status' => ImportSource::STATUS_ERROR],
-            ['name' => 'Variety — Culture',           'url' => 'https://variety.com/v/film/feed/',               'auto' => false, 'cat' => 'culture',  'status' => ImportSource::STATUS_ACTIVE],
+            ['name' => 'TechCrunch AI & Enterprise', 'url' => 'https://techcrunch.com/category/artificial-intelligence/feed/', 'auto' => true,  'cat' => 'artificial-intelligence', 'status' => ImportSource::STATUS_ACTIVE],
+            ['name' => 'Hacker News RSS',           'url' => 'https://news.ycombinator.com/rss',                                 'auto' => false, 'cat' => 'software-development',      'status' => ImportSource::STATUS_PAUSED],
+            ['name' => 'Wired Technology',          'url' => 'https://www.wired.com/feed/category/gear/latest/rss',             'auto' => false, 'cat' => 'emerging-technology',       'status' => ImportSource::STATUS_ACTIVE],
+            ['name' => 'The Verge Tech',            'url' => 'https://www.theverge.com/rss/index.xml',                           'auto' => true,  'cat' => 'generative-ai',             'status' => ImportSource::STATUS_ACTIVE],
+            ['name' => 'AWS Architecture Blog',     'url' => 'https://aws.amazon.com/blogs/architecture/feed/',                 'auto' => false, 'cat' => 'cloud-devops',              'status' => ImportSource::STATUS_PAUSED],
+            ['name' => 'KrebsonSecurity',           'url' => 'https://krebsonsecurity.com/feed/',                               'auto' => false, 'cat' => 'cybersecurity',             'status' => ImportSource::STATUS_ACTIVE],
+            ['name' => 'Towards Data Science',      'url' => 'https://towardsdatascience.com/feed',                              'auto' => false, 'cat' => 'data-analytics',            'status' => ImportSource::STATUS_ACTIVE],
+            ['name' => 'CoinDesk Web3',             'url' => 'https://www.coindesk.com/arc/outboundfeeds/rss/',                 'auto' => false, 'cat' => 'blockchain-web3',           'status' => ImportSource::STATUS_ACTIVE],
         ];
 
         foreach ($sources as $idx => $entry) {

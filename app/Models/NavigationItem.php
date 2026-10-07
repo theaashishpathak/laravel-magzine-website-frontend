@@ -119,10 +119,8 @@ class NavigationItem extends Model
         ]);
 
         $topCategories = Category::query()
-            ->whereHas('posts', fn ($q) => $q->where('status', \App\Enums\PostStatus::Published->value))
             ->withCount(['posts' => fn ($q) => $q->where('status', \App\Enums\PostStatus::Published->value)])
-            ->orderByDesc('posts_count')
-            ->take(6)
+            ->orderBy('sort_order')
             ->get();
 
         $subOrder = 1;

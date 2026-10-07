@@ -222,9 +222,8 @@ class PostShow extends Component
         return \App\Models\Category::query()
             ->with('translations')
             ->withCount(['posts' => fn($q) => $q->where('status', \App\Enums\PostStatus::Published->value)])
-            ->whereHas('posts', fn($q) => $q->where('status', \App\Enums\PostStatus::Published->value))
-            ->orderByDesc('posts_count')
-            ->limit(8)
+            ->orderBy('sort_order')
+            ->limit(12)
             ->get();
     }
 

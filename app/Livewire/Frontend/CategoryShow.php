@@ -122,10 +122,9 @@ class CategoryShow extends Component
     public function categories(): Collection
     {
         return Category::query()
-            ->whereHas('posts', fn ($q) => $q->where('status', \App\Enums\PostStatus::Published->value))
             ->withCount(['posts' => fn ($q) => $q->where('status', \App\Enums\PostStatus::Published->value)])
             ->with('translations')
-            ->orderByDesc('posts_count')
+            ->orderBy('sort_order')
             ->get();
     }
 
